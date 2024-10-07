@@ -66,6 +66,7 @@ namespace PCtoCenturion
         {
             button_list_Click(sender, e);
             /*
+            string testData = "01 01 01 73 03 00 64 C5 3A B1 00 6C B1 00 FC B1 00 AE 90 05 96 B1 00 FE 83 ED A1 04 67 A1 06 14 90 00 F0 5F 90 F8 00 F6 31 01 1A 02 73 09 61 00 1A 50 54 FF EC 73 19 90 10 00 5B 5C 8A C0 FF EA CA 14 0D B0 00 00 AA 50 64 90 F0 00 51 40 15 EC 69 03 2C 55 42 50 32 FC EB F1 04 F6 50 32 FE 70 F1 04 F8 50 32 FE 70 55 2A D0 FE 7B 50 42 F1 02 8F 80 BD A1 06 BE 90 01 7E B1 06 A6 73 38 04 47 4C 00 FF 02 35 47 9C 09 A0 03 92 79 06 00 79 05 DC 03 6F C0 8A A1 03 71 7C F5 03 7B 79 06 AF 03 90 79 05 DC 03 87 80 01 A1 06 90 79 06 AF 03 A0 79 05 DC 03 8D 05 80 02 A1 05 8B A1 03 33 90 03 A0 5E 95 81 14 06 79 03 F1 B1 01 05 7E 09 32 18 05 97 31 10 05 97 91 05 97 A1 03 35 32 20 C1 03 31 90 03 32 79 05 81 79 03 3C 79 03 4D 90 00 43 D0 F8 00 F6 13 00 79 03 3C 79 03 5E F6 12 00 90 00 45 D0 F8 00 F6 13 00 79 03 3C 79 03 5E F6 12 00 C0 19 49 14 BC 30 10 05 97 7F 09 46 02 3C 0E 04 7B 79 04 FA 00 85 88 08 28 14 0A 04 79 05 DC 03 A7 71 01 7E 00 95 88 06 3B C0 80 07 36 00 11 02 43 30 D0 3C B1 44 32 54 02 81 02 35 15 05 F1 01 05 73 0F 91 01 05 59 14 09 04 79 05 DC 03 C7 71 04 F3 95 88 04 44 10 D0 3C B1 54 02 91 01 05 50 20 35 03 5B 46 02 3C 00 04 7B B1 04 7C 79 04 FA 00 95 88 0E B1 04 C7 30 8F 79 05 AD 01 85 00";
             testData = testData.Replace(" ", "");
             Console.WriteLine(testData.Length / 2);
             var testBytes = new byte[400];
@@ -99,37 +100,32 @@ namespace PCtoCenturion
             var marker = Encoding.ASCII.GetString(header);
             marker = marker.ToUpperInvariant();
             if (marker == "HAWKDUMP")
+            #region HAWKDUMP
             {
-           //     dataFormat = inputFormat.Hawk;
+                //     dataFormat = inputFormat.Hawk;
                 ExtLog.AddLine("File format: HawkDump");
                 fileInput.Seek(0, SeekOrigin.Begin);
-                ExtLog.AddLine("NOT IMPLEMENTED");
-            }
-            else if (marker == "FINCHDUM")
-            {
-            //    dataFormat = inputFormat.Finch;
-                ExtLog.AddLine("File format: FinchDump");
-                fileInput.Seek(0, SeekOrigin.Begin);
+
+                // 416 per sector block
+                // "HawkDump\r\n" 10b
+                // address 2b
+                // data 400b  
+                // crc 2b
+                // \r\n 2b ?
+                const int blockLength = 416;
 
                 var t = fileInput.Length;
-                if ((t % 419) != 0)
+                if ((t % blockLength) != 0)
                 {
-                    ExtLog.AddLine("File size mismatch: " + ((float)t / 419.0f).ToString("F8") + " blocks?");
-                 //   return;
+                    ExtLog.AddLine("File size mismatch: " + ((float)t / (float)blockLength).ToString("F8") + " blocks?");
+                    //   return;
                 }
                 fileInput.Seek(0, SeekOrigin.Begin);
 
                 data = new List<sector>();
                 var s = 0;
 
-                // 419 per sector
-                // "FinchDump\r\n" 11b
-                // address 4b
-                // data 400b  
-                // crc 2b
-                // \r\n 2b
-
-                while (((s + 1) * 419) <= fileInput.Length)
+                while (((s + 1) * blockLength) <= fileInput.Length)
                 {
                     fileInput.Read(header, 0, 8);
                     for (var i = 0; i < 8; ++i) header[i] = (byte)(header[i] & 0x7F);
@@ -140,7 +136,79 @@ namespace PCtoCenturion
                         ExtLog.AddLine("Missing \"FinchDump\" header at sector 0x" + s.ToString("X4"));
                         return;
                     }
-                    fileInput.Seek(3 + 4, SeekOrigin.Current);
+                    fileInput.Seek(2 + 2, SeekOrigin.Current); // \r\n sectorAddress
+
+                    var ns = new sector();
+                    //    ns.address = s;
+                    fileInput.Read(ns.data, 0, 400); // sector data
+                    var dataCRC = calcCRC(ns.data);
+                    ns.crc[0] = (byte)((dataCRC & 0xFF00) >> 8); // high byte
+                    ns.crc[1] = (byte)(dataCRC & 0xFF); // low byte
+
+                    var crcH = fileInput.ReadByte(); // crc high byte
+                    var crcL = fileInput.ReadByte(); // crc low byte
+
+                    if ((crcL == 0xFF) && (crcH == 0xFF))
+                    {
+                        // no crc
+                    }
+                    else
+                    {
+                        if ((!ignoreCRC_checkBox.Checked) && ((crcL != ns.crc[1]) || (crcH != ns.crc[0])))
+                        {
+                            ExtLog.AddLine("CRC mismatch at sector 0x" + s.ToString("X4"));
+                            ExtLog.AddLine("Sector CRC: 0x" + byteToHex(ns.crc[0]) + byteToHex(ns.crc[1]));
+                            ExtLog.AddLine("File CRC: 0x" + byteToHex((byte)crcH) + byteToHex((byte)crcL));
+                        }
+                    }
+                    data.Add(ns);
+                    s++;
+                    fileInput.Seek(2, SeekOrigin.Current); // \r\n
+                }
+                currentState = state.Ready;
+                sectorNumber = 0;
+                ExtLog.AddLine("Loaded " + s + " sectors");
+
+            }
+            #endregion
+            else if (marker == "FINCHDUM")
+            #region FINCHDUMP
+            {
+                //    dataFormat = inputFormat.Finch;
+                ExtLog.AddLine("File format: FinchDump");
+                fileInput.Seek(0, SeekOrigin.Begin);
+
+                // 419 per sector block
+                // "FinchDump\r\n" 11b
+                // address 4b
+                // data 400b  
+                // crc 2b
+                // \r\n 2b
+                const int blockLength = 419;
+
+                var t = fileInput.Length;
+                if ((t % blockLength) != 0)
+                {
+                    ExtLog.AddLine("File size mismatch: " + ((float)t / (float)blockLength).ToString("F8") + " blocks?");
+                 //   return;
+                }
+                fileInput.Seek(0, SeekOrigin.Begin);
+
+                data = new List<sector>();
+                var s = 0;
+
+                while (((s + 1) * blockLength) <= fileInput.Length)
+                {
+                    fileInput.Read(header, 0, 8);
+                    for (var i = 0; i < 8; ++i) header[i] = (byte)(header[i] & 0x7F);
+                    marker = Encoding.ASCII.GetString(header);
+                    marker = marker.ToUpperInvariant();
+                    if (marker != "FINCHDUM")
+                    {
+                        ExtLog.AddLine("Missing \"FinchDump\" header at sector 0x" + s.ToString("X4"));
+                        return;
+                    }
+                    fileInput.Seek(3 + 4, SeekOrigin.Current); // p\r\n sectorAddress
 
                     var ns = new sector();
                     //    ns.address = s;
@@ -173,9 +241,11 @@ namespace PCtoCenturion
                 sectorNumber = 0;
                 ExtLog.AddLine("Loaded " + s + " sectors");
             }
+            #endregion
             else
+            #region RAW512
             {
-             //   dataFormat = inputFormat.Raw;
+                //   dataFormat = inputFormat.Raw;
 
                 // finch2.bin total 30 469 061
                 // finchdump 0x0D 0x0A, 4 bytes sector, 400 bytes sector data, 2 bytes checksum, 0x0D 0x0A, 419 total per sector
@@ -185,17 +255,20 @@ namespace PCtoCenturion
 
                 // CRC 16 XMODEM CCITT
                 ExtLog.AddLine("File format: RAW, 512 bytes blocks");
+                // 400 + padding = 512 per sector block
+                const int blockLength = 512;
+
                 var t = fileInput.Length;
-                if ((t % 512) != 0)
+                if ((t % blockLength) != 0)
                 {
-                    ExtLog.AddLine("File size mismatch: " + ((float)t / 512.0f).ToString("F8") + " blocks?");
+                    ExtLog.AddLine("File size mismatch: " + ((float)t / (float)blockLength).ToString("F8") + " blocks?");
                     return;
                 }
                 fileInput.Seek(0, SeekOrigin.Begin);
 
                 data = new List<sector>();
                 var s = 0;
-                while (((s+1)*512) <= fileInput.Length)
+                while (((s + 1) * blockLength) <= fileInput.Length)
                 {
                     var ns = new sector();
                 //    ns.address = s;
@@ -220,12 +293,13 @@ namespace PCtoCenturion
                     }
                     data.Add(ns);
                     s++;
-                    fileInput.Seek(512 * s, SeekOrigin.Begin);
+                    fileInput.Seek(blockLength * s, SeekOrigin.Begin);
                 }
                 currentState = state.Ready;
                 sectorNumber = 0;
                 ExtLog.AddLine("Loaded " + s + " sectors");
             }
+            #endregion
         }
 
         private void button_abortSend_Click(object sender, EventArgs e)
@@ -300,8 +374,6 @@ namespace PCtoCenturion
             for (var i = 0; i < d.Length; ++i) c = crc_add(c, d[i]);
             return c;
         }
-
-        private string testData = "01 01 01 73 03 00 64 C5 3A B1 00 6C B1 00 FC B1 00 AE 90 05 96 B1 00 FE 83 ED A1 04 67 A1 06 14 90 00 F0 5F 90 F8 00 F6 31 01 1A 02 73 09 61 00 1A 50 54 FF EC 73 19 90 10 00 5B 5C 8A C0 FF EA CA 14 0D B0 00 00 AA 50 64 90 F0 00 51 40 15 EC 69 03 2C 55 42 50 32 FC EB F1 04 F6 50 32 FE 70 F1 04 F8 50 32 FE 70 55 2A D0 FE 7B 50 42 F1 02 8F 80 BD A1 06 BE 90 01 7E B1 06 A6 73 38 04 47 4C 00 FF 02 35 47 9C 09 A0 03 92 79 06 00 79 05 DC 03 6F C0 8A A1 03 71 7C F5 03 7B 79 06 AF 03 90 79 05 DC 03 87 80 01 A1 06 90 79 06 AF 03 A0 79 05 DC 03 8D 05 80 02 A1 05 8B A1 03 33 90 03 A0 5E 95 81 14 06 79 03 F1 B1 01 05 7E 09 32 18 05 97 31 10 05 97 91 05 97 A1 03 35 32 20 C1 03 31 90 03 32 79 05 81 79 03 3C 79 03 4D 90 00 43 D0 F8 00 F6 13 00 79 03 3C 79 03 5E F6 12 00 90 00 45 D0 F8 00 F6 13 00 79 03 3C 79 03 5E F6 12 00 C0 19 49 14 BC 30 10 05 97 7F 09 46 02 3C 0E 04 7B 79 04 FA 00 85 88 08 28 14 0A 04 79 05 DC 03 A7 71 01 7E 00 95 88 06 3B C0 80 07 36 00 11 02 43 30 D0 3C B1 44 32 54 02 81 02 35 15 05 F1 01 05 73 0F 91 01 05 59 14 09 04 79 05 DC 03 C7 71 04 F3 95 88 04 44 10 D0 3C B1 54 02 91 01 05 50 20 35 03 5B 46 02 3C 00 04 7B B1 04 7C 79 04 FA 00 95 88 0E B1 04 C7 30 8F 79 05 AD 01 85 00";
 
         #endregion
 
@@ -608,7 +680,8 @@ namespace PCtoCenturion
                                     currentState = state.Transmit;
                                 } else
                                 {
-                                    ExtLog.Add("max retry exceeded at sector 0x" + sectorNumber.ToString("X4"));
+                                    ExtLog.terminateLineIfNecessary();
+                                    ExtLog.AddLine("Max retry exceeded at sector 0x" + sectorNumber.ToString("X4"));
                                     currentState = state.Abort;
                                 }
                             }
