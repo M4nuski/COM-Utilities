@@ -112,8 +112,19 @@ namespace SerialConsole // Terminal
                 _serialPort.Handshake = Handshake.None;
 
                 // Set the read/write timeouts
-                _serialPort.ReadTimeout = 500;
-                _serialPort.WriteTimeout = 500;
+                int timeout;
+                try
+                {
+                    timeout = int.Parse(timeout_textBox.Text);
+                    if (timeout < 0) timeout = 1;
+                } catch
+                {
+                    ExtLog.AddLine("Invalid timeout value");
+                    timeout = 500;
+                    timeout_textBox.Text = "500";
+                }
+                _serialPort.ReadTimeout = timeout;
+                _serialPort.WriteTimeout = timeout;
             } catch (Exception ex)
             {
                 ExtLog.AddLine("Error setting up serial port: " + ex.Message);
@@ -425,28 +436,57 @@ namespace SerialConsole // Terminal
             var f = File.OpenRead(openFileDialog1.FileName);
             ExtLog.AddLine("Reading file " + openFileDialog1.FileName);
 
-            var chunkSize = int.Parse(SendBinChunk_textBox.Text);
+            int chunkSize;
+            try
+            {
+                chunkSize = int.Parse(SendBinChunk_textBox.Text);
+            } 
+            catch
+            {
+                ExtLog.AddLine("Invalid chunk size value");
+                chunkSize = 256;
+                SendBinChunk_textBox.Text = "256";
+            }
             if (chunkSize < 0) chunkSize = 1;
+
             if (chunkSize > _serialPort.WriteBufferSize) chunkSize = _serialPort.WriteBufferSize;
 
-            var chunkDelay = int.Parse(SendBinPause_textBox.Text);
+            int chunkDelay;
+            try
+            {
+                chunkDelay = int.Parse(SendBinPause_textBox.Text);
+            } 
+            catch
+            {
+                ExtLog.AddLine("Invalid chunk delay value");
+                chunkDelay = 0;
+                SendBinPause_textBox.Text = "0";
+            }
             if (chunkDelay < 0) chunkDelay = 0;
 
             var data = new byte[chunkSize];
             var dataLength = f.Read(data, 0, chunkSize);
+ 
+            if ((1000 * chunkSize / (_serialPort.BaudRate / 10)) > _serialPort.WriteTimeout) ExtLog.AddLine("**** Chunk size might be too high for baudrate/timeout ****");
 
             var totalSent = 0; 
 
-            while (dataLength > 0) { 
-                _serialPort.Write(data, 0, chunkSize);
-                totalSent += chunkSize;
-                ExtLog.AddLine(ts() + "-> " + chunkSize.ToString("D"));
+            while (dataLength > 0) {
+                try
+                {
+                    _serialPort.Write(data, 0, dataLength);
+                    totalSent += dataLength;
+                    ExtLog.AddLine(ts() + "-> " + dataLength.ToString("D"));
+                } catch (Exception ex)
+                {
+                    ExtLog.AddLine(ts() + " " + ex.Message);
+                }
                 Thread.Sleep(chunkDelay);
                 Application.DoEvents();
                 this.Refresh();
                 dataLength = f.Read(data, 0, chunkSize);
             }
-            ExtLog.AddLine($"Sent {totalSent} bytes");
+            ExtLog.AddLine($"Sent {totalSent}/{f.Length} bytes");
             f.Close();
         }
     }

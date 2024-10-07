@@ -52,6 +52,8 @@ namespace SerialConsole
             this.SendBinChunk_textBox = new System.Windows.Forms.TextBox();
             this.SendBinPause_textBox = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.timeout_textBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -264,7 +266,7 @@ namespace SerialConsole
             this.panel1.Controls.Add(this.SendBinChunk_textBox);
             this.panel1.Controls.Add(this.SendBinPause_textBox);
             this.panel1.Controls.Add(this.button_sendBIN);
-            this.panel1.Location = new System.Drawing.Point(412, 12);
+            this.panel1.Location = new System.Drawing.Point(422, 12);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(269, 60);
             this.panel1.TabIndex = 18;
@@ -274,18 +276,18 @@ namespace SerialConsole
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(50, 34);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(104, 15);
+            this.label2.Size = new System.Drawing.Size(107, 15);
             this.label2.TabIndex = 21;
-            this.label2.Text = "Chunk Delay (ms)";
+            this.label2.Text = "Chunk Delay (ms):";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(85, 6);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(69, 15);
+            this.label1.Size = new System.Drawing.Size(72, 15);
             this.label1.TabIndex = 20;
-            this.label1.Text = "Chunk Size";
+            this.label1.Text = "Chunk Size:";
             // 
             // SendBinChunk_textBox
             // 
@@ -306,6 +308,8 @@ namespace SerialConsole
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.timeout_textBox);
+            this.panel2.Controls.Add(this.label3);
             this.panel2.Controls.Add(this.button_list);
             this.panel2.Controls.Add(this.comboBox_portName);
             this.panel2.Controls.Add(this.checkBox_CTS);
@@ -314,8 +318,25 @@ namespace SerialConsole
             this.panel2.Controls.Add(this.button_close);
             this.panel2.Location = new System.Drawing.Point(12, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(394, 60);
+            this.panel2.Size = new System.Drawing.Size(404, 60);
             this.panel2.TabIndex = 19;
+            // 
+            // timeout_textBox
+            // 
+            this.timeout_textBox.Location = new System.Drawing.Point(332, 32);
+            this.timeout_textBox.Name = "timeout_textBox";
+            this.timeout_textBox.Size = new System.Drawing.Size(65, 21);
+            this.timeout_textBox.TabIndex = 18;
+            this.timeout_textBox.Text = "500";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(237, 36);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(93, 15);
+            this.label3.TabIndex = 17;
+            this.label3.Text = "RX/TX Timeout:";
             // 
             // panel3
             // 
@@ -345,7 +366,7 @@ namespace SerialConsole
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SerialConsoleForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "COM Port Console - 20241007a";
+            this.Text = "COM Port Console - 20241007b";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
@@ -386,6 +407,8 @@ namespace SerialConsole
         private System.Windows.Forms.TextBox SendBinPause_textBox;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.TextBox timeout_textBox;
+        private System.Windows.Forms.Label label3;
     }
 }
 
