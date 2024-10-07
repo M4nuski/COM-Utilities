@@ -418,28 +418,35 @@ namespace SerialConsole // Terminal
         private void button_sendBIN_Click(object sender, EventArgs e)
         {
             if (!_serialPort.IsOpen) return;
-            openFileDialog1.FileName = "*.bin";
+            openFileDialog1.FileName = "*.*";
             openFileDialog1.Filter = "Binary|*.bin|All Files|*.*";
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
 
             var f = File.OpenRead(openFileDialog1.FileName);
             ExtLog.AddLine("Reading file " + openFileDialog1.FileName);
-            var b = new byte[1];
-            var data = f.ReadByte();
-            var i = 0;
-            //var mdelay = 32;
-            //var tdealy = 200;
 
-            while ((data != -1) & (_serialPort.BytesToWrite < 128)) { 
+            var chunkSize = int.Parse(SendBinChunk_textBox.Text);
+            if (chunkSize < 0) chunkSize = 1;
+            if (chunkSize > _serialPort.WriteBufferSize) chunkSize = _serialPort.WriteBufferSize;
 
-               // while (_serialPort.CtsHolding == false) { };
-                b[0] = (byte)data;
-                _serialPort.Write(b, 0, 1);
-                data = f.ReadByte();
-                i++;
-            //    if ((i % mdelay) == 0) Thread.Sleep(tdealy);
+            var chunkDelay = int.Parse(SendBinPause_textBox.Text);
+            if (chunkDelay < 0) chunkDelay = 0;
+
+            var data = new byte[chunkSize];
+            var dataLength = f.Read(data, 0, chunkSize);
+
+            var totalSent = 0; 
+
+            while (dataLength > 0) { 
+                _serialPort.Write(data, 0, chunkSize);
+                totalSent += chunkSize;
+                ExtLog.AddLine(ts() + "-> " + chunkSize.ToString("D"));
+                Thread.Sleep(chunkDelay);
+                Application.DoEvents();
+                this.Refresh();
+                dataLength = f.Read(data, 0, chunkSize);
             }
-            ExtLog.AddLine("Sent " + i + " bytes");
+            ExtLog.AddLine($"Sent {totalSent} bytes");
             f.Close();
         }
     }
