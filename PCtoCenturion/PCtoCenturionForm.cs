@@ -95,16 +95,17 @@ namespace PCtoCenturion
             fileInput = File.OpenRead(openFileDialog1.FileName);
             var header = new byte[8];
             fileInput.Read(header, 0, 8);
-
+            for (var i = 0; i < 8; ++i) header[i] = (byte)(header[i] & 0x7F);
             var marker = Encoding.ASCII.GetString(header);
-            if (marker == "HawkDump")
+            marker = marker.ToUpperInvariant();
+            if (marker == "HAWKDUMP")
             {
            //     dataFormat = inputFormat.Hawk;
                 ExtLog.AddLine("File format: HawkDump");
                 fileInput.Seek(0, SeekOrigin.Begin);
                 ExtLog.AddLine("NOT IMPLEMENTED");
             }
-            else if ((marker == "FinchDum") || (marker == "ÆÉÎÃÈÄÕÍ"))
+            else if (marker == "FINCHDUM")
             {
             //    dataFormat = inputFormat.Finch;
                 ExtLog.AddLine("File format: FinchDump");
@@ -114,7 +115,7 @@ namespace PCtoCenturion
                 if ((t % 419) != 0)
                 {
                     ExtLog.AddLine("File size mismatch: " + ((float)t / 419.0f).ToString("F8") + " blocks?");
-                    return;
+                 //   return;
                 }
                 fileInput.Seek(0, SeekOrigin.Begin);
 
@@ -131,8 +132,10 @@ namespace PCtoCenturion
                 while (((s + 1) * 419) <= fileInput.Length)
                 {
                     fileInput.Read(header, 0, 8);
+                    for (var i = 0; i < 8; ++i) header[i] = (byte)(header[i] & 0x7F);
                     marker = Encoding.ASCII.GetString(header);
-                    if ((marker != "FinchDum") && (marker != "ÆÉÎÃÈÄÕÍ"))
+                    marker = marker.ToUpperInvariant();
+                    if (marker != "FINCHDUM")
                     {
                         ExtLog.AddLine("Missing \"FinchDump\" header at sector 0x" + s.ToString("X4"));
                         return;
@@ -155,7 +158,7 @@ namespace PCtoCenturion
                     }
                     else
                     {
-                        if ((crcL != ns.crc[1]) && (crcH != ns.crc[0]))
+                        if ((!ignoreCRC_checkBox.Checked) && ((crcL != ns.crc[1]) || (crcH != ns.crc[0])))
                         {
                             ExtLog.AddLine("CRC mismatch at sector 0x" + s.ToString("X4"));
                             ExtLog.AddLine("Sector CRC: 0x" + byteToHex(ns.crc[0]) + byteToHex(ns.crc[1]));
@@ -208,7 +211,7 @@ namespace PCtoCenturion
                         // no crc
                     } else
                     {
-                        if ((crcL != ns.crc[1]) && (crcH != ns.crc[0]))
+                        if ((!ignoreCRC_checkBox.Checked) && ((crcL != ns.crc[1]) || (crcH != ns.crc[0])))
                         {
                             ExtLog.AddLine("CRC mismatch at sector 0x" + s.ToString("X4"));
                             ExtLog.AddLine("Sector CRC: 0x" + byteToHex(ns.crc[0]) + byteToHex(ns.crc[1]));
@@ -227,9 +230,10 @@ namespace PCtoCenturion
 
         private void button_abortSend_Click(object sender, EventArgs e)
         {
-            if (currentState != state.Idle) return;
+            if (currentState == state.Idle) return;
             ExtLog.AddLine("Aborting send...");
             currentState = state.Abort;
+            timer1_Tick(null, null);
         }
 
         private void button_sendFile_Click(object sender, EventArgs e)

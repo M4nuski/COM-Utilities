@@ -43,6 +43,7 @@ namespace PCtoCenturion
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label_sector = new System.Windows.Forms.Label();
+            this.ignoreCRC_checkBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkBox_CTS
@@ -60,9 +61,9 @@ namespace PCtoCenturion
             // 
             // button_close
             // 
-            this.button_close.Location = new System.Drawing.Point(507, 12);
+            this.button_close.Location = new System.Drawing.Point(486, 12);
             this.button_close.Name = "button_close";
-            this.button_close.Size = new System.Drawing.Size(105, 23);
+            this.button_close.Size = new System.Drawing.Size(84, 23);
             this.button_close.TabIndex = 21;
             this.button_close.Text = "Close Device";
             this.button_close.UseVisualStyleBackColor = true;
@@ -98,7 +99,7 @@ namespace PCtoCenturion
             // 
             this.button_open.Location = new System.Drawing.Point(396, 12);
             this.button_open.Name = "button_open";
-            this.button_open.Size = new System.Drawing.Size(105, 23);
+            this.button_open.Size = new System.Drawing.Size(84, 23);
             this.button_open.TabIndex = 18;
             this.button_open.Text = "Open Device";
             this.button_open.UseVisualStyleBackColor = true;
@@ -130,9 +131,9 @@ namespace PCtoCenturion
             // button_loadFile
             // 
             this.button_loadFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_loadFile.Location = new System.Drawing.Point(734, 12);
+            this.button_loadFile.Location = new System.Drawing.Point(797, 12);
             this.button_loadFile.Name = "button_loadFile";
-            this.button_loadFile.Size = new System.Drawing.Size(105, 23);
+            this.button_loadFile.Size = new System.Drawing.Size(84, 23);
             this.button_loadFile.TabIndex = 24;
             this.button_loadFile.Text = "Load data file";
             this.button_loadFile.UseVisualStyleBackColor = true;
@@ -141,9 +142,9 @@ namespace PCtoCenturion
             // button_sendFile
             // 
             this.button_sendFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_sendFile.Location = new System.Drawing.Point(845, 12);
+            this.button_sendFile.Location = new System.Drawing.Point(887, 12);
             this.button_sendFile.Name = "button_sendFile";
-            this.button_sendFile.Size = new System.Drawing.Size(105, 23);
+            this.button_sendFile.Size = new System.Drawing.Size(84, 23);
             this.button_sendFile.TabIndex = 25;
             this.button_sendFile.Text = "Begin Send";
             this.button_sendFile.UseVisualStyleBackColor = true;
@@ -152,9 +153,9 @@ namespace PCtoCenturion
             // button_abortSend
             // 
             this.button_abortSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_abortSend.Location = new System.Drawing.Point(956, 12);
+            this.button_abortSend.Location = new System.Drawing.Point(977, 12);
             this.button_abortSend.Name = "button_abortSend";
-            this.button_abortSend.Size = new System.Drawing.Size(105, 23);
+            this.button_abortSend.Size = new System.Drawing.Size(84, 23);
             this.button_abortSend.TabIndex = 26;
             this.button_abortSend.Text = "Abort Send";
             this.button_abortSend.UseVisualStyleBackColor = true;
@@ -172,17 +173,28 @@ namespace PCtoCenturion
             // label_sector
             // 
             this.label_sector.AutoSize = true;
-            this.label_sector.Location = new System.Drawing.Point(629, 17);
+            this.label_sector.Location = new System.Drawing.Point(576, 17);
             this.label_sector.Name = "label_sector";
             this.label_sector.Size = new System.Drawing.Size(79, 13);
             this.label_sector.TabIndex = 27;
             this.label_sector.Text = "Sector: 0x0000";
+            // 
+            // ignoreCRC_checkBox
+            // 
+            this.ignoreCRC_checkBox.AutoSize = true;
+            this.ignoreCRC_checkBox.Location = new System.Drawing.Point(691, 16);
+            this.ignoreCRC_checkBox.Name = "ignoreCRC_checkBox";
+            this.ignoreCRC_checkBox.Size = new System.Drawing.Size(100, 17);
+            this.ignoreCRC_checkBox.TabIndex = 28;
+            this.ignoreCRC_checkBox.Text = "Ignore File CRC";
+            this.ignoreCRC_checkBox.UseVisualStyleBackColor = true;
             // 
             // PCtoCenturionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1073, 775);
+            this.Controls.Add(this.ignoreCRC_checkBox);
             this.Controls.Add(this.label_sector);
             this.Controls.Add(this.button_abortSend);
             this.Controls.Add(this.button_sendFile);
@@ -218,6 +230,7 @@ namespace PCtoCenturion
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label label_sector;
+        private System.Windows.Forms.CheckBox ignoreCRC_checkBox;
     }
 }
 
