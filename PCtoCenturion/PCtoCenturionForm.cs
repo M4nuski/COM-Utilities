@@ -131,9 +131,9 @@ namespace PCtoCenturion
                     for (var i = 0; i < 8; ++i) header[i] = (byte)(header[i] & 0x7F);
                     marker = Encoding.ASCII.GetString(header);
                     marker = marker.ToUpperInvariant();
-                    if (marker != "FINCHDUM")
+                    if (marker != "HAWKDUMP")
                     {
-                        ExtLog.AddLine("Missing \"FinchDump\" header at sector 0x" + s.ToString("X4"));
+                        ExtLog.AddLine("Missing \"HawkDump\" header at sector 0x" + s.ToString("X4"));
                         return;
                     }
                     fileInput.Seek(2 + 2, SeekOrigin.Current); // \r\n sectorAddress
@@ -159,6 +159,8 @@ namespace PCtoCenturion
                             ExtLog.AddLine("CRC mismatch at sector 0x" + s.ToString("X4"));
                             ExtLog.AddLine("Sector CRC: 0x" + byteToHex(ns.crc[0]) + byteToHex(ns.crc[1]));
                             ExtLog.AddLine("File CRC: 0x" + byteToHex((byte)crcH) + byteToHex((byte)crcL));
+                            Application.DoEvents();
+                            this.Refresh();
                         }
                     }
                     data.Add(ns);
@@ -231,6 +233,8 @@ namespace PCtoCenturion
                             ExtLog.AddLine("CRC mismatch at sector 0x" + s.ToString("X4"));
                             ExtLog.AddLine("Sector CRC: 0x" + byteToHex(ns.crc[0]) + byteToHex(ns.crc[1]));
                             ExtLog.AddLine("File CRC: 0x" + byteToHex((byte)crcH) + byteToHex((byte)crcL));
+                            Application.DoEvents();
+                            this.Refresh();
                         }
                     }
                     data.Add(ns);
