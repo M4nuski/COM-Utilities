@@ -18,7 +18,7 @@ namespace PCtoCenturion
 
         public class sector
         {
-          //  public int address; // 0 to 0x3200-1
+            //  public int address; // 0 to 0x3200-1
             public byte[] data = new byte[400];
             public byte[] crc = new byte[2];
         }
@@ -26,20 +26,16 @@ namespace PCtoCenturion
 
         public enum state
         {
-            Idle, Ready, WaitingStart, Transmit, WaitTransmitConfirmation, Abort
+            Idle, Ready, WaitingStart, Transmit, WaitReceiveResults, WaitReadyForNext, Abort
         }
-       /* public enum inputFormat
-        {
-            Hawk, Finch, Raw
-        }*/
         public state currentState = state.Idle;
-     //   public inputFormat dataFormat = inputFormat.Raw;
+        public string[] stateStrings = new string[7] {"Idle", "Ready to send", "Waiting Centurion Start Signal", "Transmiting Sector", "Waiting for sector results", "Waiting for Centution Ready for Next", "Abort" };
 
         public int sectorNumber = 0;
         static SerialPort COMport;
 
         public Stream fileInput;
-        // public byte[] data = new byte[402];
+
         const byte OK = 0xFF;
         const byte FAILED = 0x00;
         const int maxRetry = 10;
@@ -102,16 +98,14 @@ namespace PCtoCenturion
             if (marker == "HAWKDUMP")
             #region HAWKDUMP
             {
-                //     dataFormat = inputFormat.Hawk;
                 ExtLog.AddLine("File format: HawkDump");
                 fileInput.Seek(0, SeekOrigin.Begin);
-
-                // 416 per sector block
+                // 416 bytes per sector block
                 // "HawkDump\r\n" 10b
                 // address 2b
                 // data 400b  
                 // crc 2b
-                // \r\n 2b ?
+                // \r\n 2b
                 const int blockLength = 416;
 
                 var t = fileInput.Length;
@@ -176,10 +170,8 @@ namespace PCtoCenturion
             else if (marker == "FINCHDUM")
             #region FINCHDUMP
             {
-                //    dataFormat = inputFormat.Finch;
                 ExtLog.AddLine("File format: FinchDump");
                 fileInput.Seek(0, SeekOrigin.Begin);
-
                 // 419 per sector block
                 // "FinchDump\r\n" 11b
                 // address 4b
@@ -191,6 +183,7 @@ namespace PCtoCenturion
                 var t = fileInput.Length;
                 if ((t % blockLength) != 0)
                 {
+                    // finch2.bin total 30 469 061
                     ExtLog.AddLine("File size mismatch: " + ((float)t / (float)blockLength).ToString("F8") + " blocks?");
                  //   return;
                 }
@@ -248,11 +241,7 @@ namespace PCtoCenturion
             #endregion
             else
             #region RAW512
-            {
-                //   dataFormat = inputFormat.Raw;
-
-                // finch2.bin total 30 469 061
-                // finchdump 0x0D 0x0A, 4 bytes sector, 400 bytes sector data, 2 bytes checksum, 0x0D 0x0A, 419 total per sector
+            {            
 
                 // HACKfix.img total 6 651 904, 512 bytes per blocks, 12 992 blocks
                 // CPU5fix.img total 6 651 904
@@ -304,6 +293,8 @@ namespace PCtoCenturion
                 ExtLog.AddLine("Loaded " + s + " sectors");
             }
             #endregion
+
+            timer1_Tick(null, null);
         }
 
         private void button_abortSend_Click(object sender, EventArgs e)
@@ -335,7 +326,8 @@ namespace PCtoCenturion
             // send 402 chunk
 
             // wait for FF (good) or 00 (bad)
-            // resend if 00
+            // resend if 00, send next if FF
+            // wait for FF
             // load next chunk if under 0x3200
 
 
@@ -586,9 +578,9 @@ namespace PCtoCenturion
             {
                 case state.Abort:
                 {
-                        currentState = state.Idle;
-                        sectorNumber = 0;
-                        if (COMport.IsOpen) COMport.DiscardOutBuffer();
+                    currentState = state.Idle;
+                    sectorNumber = 0;
+                    if (COMport.IsOpen) COMport.DiscardOutBuffer();
                     break;
                 }
                 case state.Idle:
@@ -597,59 +589,60 @@ namespace PCtoCenturion
                 }
                 case state.Transmit:
                 {
-                        label_sector.Text = "Sector: 0x" + sectorNumber.ToString("X4");
-                        try
-                        {
-                            COMport.Write(data[sectorNumber].data, 0, 400);
-                            COMport.Write(data[sectorNumber].crc, 0, 2);
-                            currentState = state.WaitTransmitConfirmation;
-                            timer1.Enabled = true;
-                        } 
-                        catch (Exception ex)
-                        {
-                            ExtLog.terminateLineIfNecessary();
-                            ExtLog.AddLine("TX Exception: " + ex.Message);
-                            currentState = state.Idle;
-                        }
+                    label_sector.Text = "Sector: 0x" + sectorNumber.ToString("X4");
+                    try
+                    {
+                        COMport.Write(data[sectorNumber].data, 0, 400);
+                        COMport.Write(data[sectorNumber].crc, 0, 2);
+                        currentState = state.WaitReceiveResults;
+                        timer1.Enabled = true;
+                    } 
+                    catch (Exception ex)
+                    {
+                        ExtLog.terminateLineIfNecessary();
+                        ExtLog.AddLine("TX Exception: " + ex.Message);
+                        currentState = state.Idle;
+                        sectorNumber = 0;
+                        if (COMport.IsOpen) COMport.DiscardOutBuffer();
+                    }
                     break;
                 }
                 case state.WaitingStart:
                 {
-                        bbuff[0] = OK;
-                        var r = 0;
-                        try
+                    bbuff[0] = OK;
+                    var r = 0;
+                    try
+                    {
+                        COMport.Write(bbuff, 0, 1);
+                        r = COMport.Read(bbuff, 0, 1);
+                    }
+                    catch
+                    {
+                        r = 0;
+                    }
+                    if (r == 1)
+                    {
+                        if (bbuff[0] == OK)
                         {
-                            COMport.Write(bbuff, 0, 1);
-                            r = COMport.Read(bbuff, 0, 1);
+                            ExtLog.terminateLineIfNecessary();
+                            ExtLog.Add("Sending");
+                            currentTry = 0;
+                            currentState = state.Transmit;
                         }
-                        catch
+                        else
                         {
-                            r = 0;
+                            ExtLog.Add("?");
                         }
-                        if (r == 1)
-                        {
-                            if (bbuff[0] == OK)
-                            {
-                                ExtLog.terminateLineIfNecessary();
-                                ExtLog.Add("Sending");
-                                currentTry = 0;
-                                currentState = state.Transmit;
-                            }
-                            else
-                            {
-                                ExtLog.Add("X");
-                            }
-                        } else
-                        {
-                            ExtLog.Add(".");
-                        }
-                        timer1.Enabled = true;
-                        break;
+                    } else
+                    {
+                        ExtLog.Add(".");
+                    }
+                    timer1.Enabled = true;
+                    break;
                 }
-                case state.WaitTransmitConfirmation:
+                case state.WaitReceiveResults:
                 {
                         var r = 0;
-                      //  COMport.Write(bbuff, 0, 1);
                         try
                         {
                             r = COMport.Read(bbuff, 0, 1);
@@ -672,7 +665,7 @@ namespace PCtoCenturion
                                     currentState = state.Idle;
                                 } else
                                 {
-                                    currentState = state.Transmit;
+                                    currentState = state.WaitReadyForNext;
                                 }
                             }
                             else
@@ -681,7 +674,7 @@ namespace PCtoCenturion
                                 currentTry++;
                                 if (currentTry < maxRetry)
                                 {
-                                    currentState = state.Transmit;
+                                    currentState = state.WaitReadyForNext;
                                 } else
                                 {
                                     ExtLog.terminateLineIfNecessary();
@@ -693,7 +686,33 @@ namespace PCtoCenturion
                         timer1.Enabled = true;
                         break;
                 }
+                case state.WaitReadyForNext:
+                {
+                    var r = 0;
+                    try
+                    {
+                        r = COMport.Read(bbuff, 0, 1);
+                    }
+                    catch
+                    {
+                        r = 0;
+                    }
+                    if (r == 1)
+                    {
+                        if (bbuff[0] == OK)
+                        {
+                            currentState = state.Transmit;
+                        }
+                        else
+                        {
+                            ExtLog.Add("?");
+                        }
+                    }
+                    timer1.Enabled = true;
+                    break;
+                }
             }
+            toolStripStatusLabel1.Text = stateStrings[(int)currentState];
         }
     }
 }

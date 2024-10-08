@@ -44,6 +44,9 @@ namespace PCtoCenturion
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label_sector = new System.Windows.Forms.Label();
             this.ignoreCRC_checkBox = new System.Windows.Forms.CheckBox();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // checkBox_CTS
@@ -125,7 +128,7 @@ namespace PCtoCenturion
             this.textBox_output.Multiline = true;
             this.textBox_output.Name = "textBox_output";
             this.textBox_output.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_output.Size = new System.Drawing.Size(1049, 720);
+            this.textBox_output.Size = new System.Drawing.Size(1049, 699);
             this.textBox_output.TabIndex = 23;
             // 
             // button_loadFile
@@ -181,6 +184,7 @@ namespace PCtoCenturion
             // 
             // ignoreCRC_checkBox
             // 
+            this.ignoreCRC_checkBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ignoreCRC_checkBox.AutoSize = true;
             this.ignoreCRC_checkBox.Location = new System.Drawing.Point(691, 16);
             this.ignoreCRC_checkBox.Name = "ignoreCRC_checkBox";
@@ -189,11 +193,27 @@ namespace PCtoCenturion
             this.ignoreCRC_checkBox.Text = "Ignore File CRC";
             this.ignoreCRC_checkBox.UseVisualStyleBackColor = true;
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 753);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1073, 22);
+            this.statusStrip1.SizingGrip = false;
+            this.statusStrip1.TabIndex = 29;
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+            // 
             // PCtoCenturionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1073, 775);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.ignoreCRC_checkBox);
             this.Controls.Add(this.label_sector);
             this.Controls.Add(this.button_abortSend);
@@ -210,6 +230,8 @@ namespace PCtoCenturion
             this.Text = "PC to Centurion serial platter dumper";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PCtoCenturionForm_FormClosing);
             this.Load += new System.EventHandler(this.PCtoCenturionForm_Load);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -231,6 +253,8 @@ namespace PCtoCenturion
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label label_sector;
         private System.Windows.Forms.CheckBox ignoreCRC_checkBox;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }
 
