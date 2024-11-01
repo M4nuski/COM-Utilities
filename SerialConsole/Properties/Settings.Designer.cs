@@ -130,5 +130,77 @@ namespace SerialConsole.Properties {
                 this["stopBits"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("256")]
+        public int chunkSize {
+            get {
+                return ((int)(this["chunkSize"]));
+            }
+            set {
+                this["chunkSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string chunkDelay {
+            get {
+                return ((string)(this["chunkDelay"]));
+            }
+            set {
+                this["chunkDelay"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("AA AA 00 00 55 55 0D 0A")]
+        public string pattern {
+            get {
+                return ((string)(this["pattern"]));
+            }
+            set {
+                this["pattern"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int patternDelay {
+            get {
+                return ((int)(this["patternDelay"]));
+            }
+            set {
+                this["patternDelay"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int patternMode {
+            get {
+                return ((int)(this["patternMode"]));
+            }
+            set {
+                this["patternMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("FF")]
+        public string patternReply {
+            get {
+                return ((string)(this["patternReply"]));
+            }
+            set {
+                this["patternReply"] = value;
+            }
+        }
     }
 }

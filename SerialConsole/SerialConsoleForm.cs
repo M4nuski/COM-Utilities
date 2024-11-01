@@ -18,6 +18,7 @@ namespace SerialConsole // Terminal
         static SerialPort _serialPort;
 
         int _formatIndex = 0;
+        bool stopSend = false;
 
         static string _history_fileName = "history.txt";
         List<string> history = new List<string>();
@@ -491,11 +492,6 @@ namespace SerialConsole // Terminal
             ExtLog.AddLine("Port Closed");
         }
 
-        private void checkBox_CTS_CheckedChanged(object sender, EventArgs e)
-        {
-         //   _serialPort.Handshake = checkBox_CTS.Checked ? Handshake.RequestToSend : Handshake.None;
-        }
-
         private void button_sendBIN_Click(object sender, EventArgs e)
         {
             if (!_serialPort.IsOpen) return;
@@ -505,6 +501,7 @@ namespace SerialConsole // Terminal
 
             var f = File.OpenRead(openFileDialog1.FileName);
             ExtLog.AddLine("Reading file " + openFileDialog1.FileName);
+            stopSend = false;
 
             int chunkSize;
             try
@@ -541,7 +538,7 @@ namespace SerialConsole // Terminal
 
             var totalSent = 0; 
 
-            while (dataLength > 0) {
+            while ((dataLength > 0) && !stopSend) {
                 try
                 {
                     _serialPort.Write(data, 0, dataLength);
@@ -551,13 +548,23 @@ namespace SerialConsole // Terminal
                 {
                     ExtLog.AddLine(ts() + " " + ex.Message);
                 }
-                Thread.Sleep(chunkDelay);
+                if (chunkDelay != 0) Thread.Sleep(chunkDelay);
                 Application.DoEvents();
                 this.Refresh();
                 dataLength = f.Read(data, 0, chunkSize);
             }
             ExtLog.AddLine($"Sent {totalSent}/{f.Length} bytes");
             f.Close();
+        }
+
+        private void button_X_Click(object sender, EventArgs e)
+        {
+            stopSend = true;
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

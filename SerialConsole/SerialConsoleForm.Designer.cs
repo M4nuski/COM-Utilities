@@ -46,6 +46,7 @@ namespace SerialConsole
             this.button_sendBIN = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button_X = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.SendBinChunk_textBox = new System.Windows.Forms.TextBox();
@@ -59,9 +60,18 @@ namespace SerialConsole
             this.timeout_textBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.checkBox_sendPattern = new System.Windows.Forms.CheckBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_list
@@ -90,11 +100,11 @@ namespace SerialConsole
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox_output.Font = new System.Drawing.Font("Consolas", 12F);
-            this.textBox_output.Location = new System.Drawing.Point(10, 106);
+            this.textBox_output.Location = new System.Drawing.Point(10, 135);
             this.textBox_output.Multiline = true;
             this.textBox_output.Name = "textBox_output";
             this.textBox_output.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_output.Size = new System.Drawing.Size(1236, 653);
+            this.textBox_output.Size = new System.Drawing.Size(1236, 624);
             this.textBox_output.TabIndex = 2;
             // 
             // button_clear
@@ -141,7 +151,7 @@ namespace SerialConsole
             // 
             this.checkBox_pause.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox_pause.AutoSize = true;
-            this.checkBox_pause.Location = new System.Drawing.Point(158, 36);
+            this.checkBox_pause.Location = new System.Drawing.Point(158, 31);
             this.checkBox_pause.Name = "checkBox_pause";
             this.checkBox_pause.Size = new System.Drawing.Size(85, 19);
             this.checkBox_pause.TabIndex = 6;
@@ -232,7 +242,7 @@ namespace SerialConsole
             this.checkBox_timeStamps.AutoSize = true;
             this.checkBox_timeStamps.Checked = true;
             this.checkBox_timeStamps.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_timeStamps.Location = new System.Drawing.Point(3, 36);
+            this.checkBox_timeStamps.Location = new System.Drawing.Point(5, 31);
             this.checkBox_timeStamps.Name = "checkBox_timeStamps";
             this.checkBox_timeStamps.Size = new System.Drawing.Size(94, 19);
             this.checkBox_timeStamps.TabIndex = 15;
@@ -257,20 +267,31 @@ namespace SerialConsole
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.button_X);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.SendBinChunk_textBox);
             this.panel1.Controls.Add(this.SendBinPause_textBox);
             this.panel1.Controls.Add(this.button_sendBIN);
-            this.panel1.Location = new System.Drawing.Point(422, 12);
+            this.panel1.Location = new System.Drawing.Point(411, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(269, 60);
+            this.panel1.Size = new System.Drawing.Size(255, 60);
             this.panel1.TabIndex = 18;
+            // 
+            // button_X
+            // 
+            this.button_X.Location = new System.Drawing.Point(4, 28);
+            this.button_X.Name = "button_X";
+            this.button_X.Size = new System.Drawing.Size(29, 23);
+            this.button_X.TabIndex = 22;
+            this.button_X.Text = "X";
+            this.button_X.UseVisualStyleBackColor = true;
+            this.button_X.Click += new System.EventHandler(this.button_X_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(50, 34);
+            this.label2.Location = new System.Drawing.Point(46, 32);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(107, 15);
             this.label2.TabIndex = 21;
@@ -279,7 +300,7 @@ namespace SerialConsole
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(85, 6);
+            this.label1.Location = new System.Drawing.Point(81, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(72, 15);
             this.label1.TabIndex = 20;
@@ -287,17 +308,17 @@ namespace SerialConsole
             // 
             // SendBinChunk_textBox
             // 
-            this.SendBinChunk_textBox.Location = new System.Drawing.Point(160, 3);
+            this.SendBinChunk_textBox.Location = new System.Drawing.Point(155, 3);
             this.SendBinChunk_textBox.Name = "SendBinChunk_textBox";
-            this.SendBinChunk_textBox.Size = new System.Drawing.Size(100, 21);
+            this.SendBinChunk_textBox.Size = new System.Drawing.Size(91, 21);
             this.SendBinChunk_textBox.TabIndex = 19;
             this.SendBinChunk_textBox.Text = "256";
             // 
             // SendBinPause_textBox
             // 
-            this.SendBinPause_textBox.Location = new System.Drawing.Point(160, 32);
+            this.SendBinPause_textBox.Location = new System.Drawing.Point(155, 29);
             this.SendBinPause_textBox.Name = "SendBinPause_textBox";
-            this.SendBinPause_textBox.Size = new System.Drawing.Size(100, 21);
+            this.SendBinPause_textBox.Size = new System.Drawing.Size(91, 21);
             this.SendBinPause_textBox.TabIndex = 18;
             this.SendBinPause_textBox.Text = "0";
             // 
@@ -417,10 +438,93 @@ namespace SerialConsole
             this.panel3.Size = new System.Drawing.Size(253, 60);
             this.panel3.TabIndex = 20;
             // 
+            // panel4
+            // 
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel4.Controls.Add(this.label6);
+            this.panel4.Controls.Add(this.comboBox1);
+            this.panel4.Controls.Add(this.textBox3);
+            this.panel4.Controls.Add(this.label5);
+            this.panel4.Controls.Add(this.textBox2);
+            this.panel4.Controls.Add(this.textBox1);
+            this.panel4.Controls.Add(this.checkBox_sendPattern);
+            this.panel4.Location = new System.Drawing.Point(672, 12);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(206, 117);
+            this.panel4.TabIndex = 21;
+            // 
+            // checkBox_sendPattern
+            // 
+            this.checkBox_sendPattern.AutoSize = true;
+            this.checkBox_sendPattern.Location = new System.Drawing.Point(5, 8);
+            this.checkBox_sendPattern.Name = "checkBox_sendPattern";
+            this.checkBox_sendPattern.Size = new System.Drawing.Size(97, 19);
+            this.checkBox_sendPattern.TabIndex = 0;
+            this.checkBox_sendPattern.Text = "Send Pattern";
+            this.checkBox_sendPattern.UseVisualStyleBackColor = true;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(5, 34);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(193, 21);
+            this.textBox1.TabIndex = 1;
+            this.textBox1.Text = "AA AA AA AA 00 01 0D 0A";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(107, 59);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(91, 21);
+            this.textBox2.TabIndex = 20;
+            this.textBox2.Text = "50";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(38, 62);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(67, 15);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Every (ms):";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(74, 84);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(124, 21);
+            this.textBox3.TabIndex = 22;
+            this.textBox3.Text = "FF";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "Once",
+            "Repeat",
+            "Reply Once",
+            "Reply Always"});
+            this.comboBox1.Location = new System.Drawing.Point(107, 7);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(91, 23);
+            this.comboBox1.TabIndex = 23;
+            this.comboBox1.Text = "Once";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 87);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(60, 15);
+            this.label6.TabIndex = 24;
+            this.label6.Text = "Reply On:";
+            // 
             // SerialConsoleForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(1256, 798);
+            this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -441,6 +545,8 @@ namespace SerialConsole
             this.panel2.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -462,7 +568,6 @@ namespace SerialConsole
         private System.Windows.Forms.ComboBox comboBox_Format;
         private System.Windows.Forms.ComboBox comboBox_inputType;
         private System.Windows.Forms.CheckBox checkBox_timeStamps;
-        private System.ComponentModel.IContainer components;
         private System.Windows.Forms.Button button_sendBIN;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Panel panel1;
@@ -479,6 +584,15 @@ namespace SerialConsole
         private System.Windows.Forms.ComboBox comboBox_handshake;
         private System.Windows.Forms.ComboBox comboBox_stopBits;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button_X;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.CheckBox checkBox_sendPattern;
+        private System.Windows.Forms.Label label6;
     }
 }
 
