@@ -61,13 +61,13 @@ namespace SerialConsole
             this.label3 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.checkBox_sendPattern = new System.Windows.Forms.CheckBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.comboBox_pattern = new System.Windows.Forms.ComboBox();
+            this.textBox_receivePattern = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBox_patternDelay = new System.Windows.Forms.TextBox();
+            this.textBox_sendPattern = new System.Windows.Forms.TextBox();
+            this.checkBox_sendPattern = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -442,16 +442,72 @@ namespace SerialConsole
             // 
             this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel4.Controls.Add(this.label6);
-            this.panel4.Controls.Add(this.comboBox1);
-            this.panel4.Controls.Add(this.textBox3);
+            this.panel4.Controls.Add(this.comboBox_pattern);
+            this.panel4.Controls.Add(this.textBox_receivePattern);
             this.panel4.Controls.Add(this.label5);
-            this.panel4.Controls.Add(this.textBox2);
-            this.panel4.Controls.Add(this.textBox1);
+            this.panel4.Controls.Add(this.textBox_patternDelay);
+            this.panel4.Controls.Add(this.textBox_sendPattern);
             this.panel4.Controls.Add(this.checkBox_sendPattern);
             this.panel4.Location = new System.Drawing.Point(672, 12);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(206, 117);
             this.panel4.TabIndex = 21;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(8, 87);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(60, 15);
+            this.label6.TabIndex = 24;
+            this.label6.Text = "Reply On:";
+            // 
+            // comboBox_pattern
+            // 
+            this.comboBox_pattern.FormattingEnabled = true;
+            this.comboBox_pattern.Items.AddRange(new object[] {
+            "Once",
+            "Repeat",
+            "Reply Once",
+            "Reply Always"});
+            this.comboBox_pattern.Location = new System.Drawing.Point(107, 7);
+            this.comboBox_pattern.Name = "comboBox_pattern";
+            this.comboBox_pattern.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_pattern.TabIndex = 23;
+            this.comboBox_pattern.Text = "Once";
+            // 
+            // textBox_receivePattern
+            // 
+            this.textBox_receivePattern.Location = new System.Drawing.Point(74, 84);
+            this.textBox_receivePattern.Name = "textBox_receivePattern";
+            this.textBox_receivePattern.Size = new System.Drawing.Size(124, 21);
+            this.textBox_receivePattern.TabIndex = 22;
+            this.textBox_receivePattern.Text = "FF";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 62);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(112, 15);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Repeat Delay (ms):";
+            // 
+            // textBox_patternDelay
+            // 
+            this.textBox_patternDelay.Location = new System.Drawing.Point(121, 59);
+            this.textBox_patternDelay.Name = "textBox_patternDelay";
+            this.textBox_patternDelay.Size = new System.Drawing.Size(77, 21);
+            this.textBox_patternDelay.TabIndex = 20;
+            this.textBox_patternDelay.Text = "50";
+            // 
+            // textBox_sendPattern
+            // 
+            this.textBox_sendPattern.Location = new System.Drawing.Point(5, 34);
+            this.textBox_sendPattern.Name = "textBox_sendPattern";
+            this.textBox_sendPattern.Size = new System.Drawing.Size(193, 21);
+            this.textBox_sendPattern.TabIndex = 1;
+            this.textBox_sendPattern.Text = "AA AA AA AA 00 01 0D 0A";
             // 
             // checkBox_sendPattern
             // 
@@ -462,63 +518,7 @@ namespace SerialConsole
             this.checkBox_sendPattern.TabIndex = 0;
             this.checkBox_sendPattern.Text = "Send Pattern";
             this.checkBox_sendPattern.UseVisualStyleBackColor = true;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(5, 34);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(193, 21);
-            this.textBox1.TabIndex = 1;
-            this.textBox1.Text = "AA AA AA AA 00 01 0D 0A";
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(107, 59);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(91, 21);
-            this.textBox2.TabIndex = 20;
-            this.textBox2.Text = "50";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(38, 62);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(67, 15);
-            this.label5.TabIndex = 21;
-            this.label5.Text = "Every (ms):";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(74, 84);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(124, 21);
-            this.textBox3.TabIndex = 22;
-            this.textBox3.Text = "FF";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "Once",
-            "Repeat",
-            "Reply Once",
-            "Reply Always"});
-            this.comboBox1.Location = new System.Drawing.Point(107, 7);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(91, 23);
-            this.comboBox1.TabIndex = 23;
-            this.comboBox1.Text = "Once";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 87);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(60, 15);
-            this.label6.TabIndex = 24;
-            this.label6.Text = "Reply On:";
+            this.checkBox_sendPattern.CheckedChanged += new System.EventHandler(this.checkBox_sendPattern_CheckedChanged);
             // 
             // SerialConsoleForm
             // 
@@ -536,7 +536,7 @@ namespace SerialConsole
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SerialConsoleForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "COM Port Console - 20241007b";
+            this.Text = "COM Port Console - 20241101a";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
@@ -586,11 +586,11 @@ namespace SerialConsole
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button_X;
         private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.ComboBox comboBox_pattern;
+        private System.Windows.Forms.TextBox textBox_receivePattern;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox_patternDelay;
+        private System.Windows.Forms.TextBox textBox_sendPattern;
         private System.Windows.Forms.CheckBox checkBox_sendPattern;
         private System.Windows.Forms.Label label6;
     }

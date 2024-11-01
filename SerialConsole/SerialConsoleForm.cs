@@ -19,6 +19,9 @@ namespace SerialConsole // Terminal
 
         int _formatIndex = 0;
         bool stopSend = false;
+        List<byte> sendPattern = new List<byte>();
+        List<byte> receivePattern = new List<byte>();
+        List<byte> receiveMatchBuffer = new List<byte>();
 
         static string _history_fileName = "history.txt";
         List<string> history = new List<string>();
@@ -64,6 +67,11 @@ namespace SerialConsole // Terminal
                 comboBox_parity.SelectedIndex = Properties.Settings.Default.parity;
                 comboBox_stopBits.SelectedIndex = Properties.Settings.Default.stopBits;
 
+                textBox_sendPattern.Text = Properties.Settings.Default.pattern;
+                textBox_receivePattern.Text = Properties.Settings.Default.patternReply;
+                textBox_patternDelay.Text = Properties.Settings.Default.patternDelay.ToString("D");
+                comboBox_pattern.SelectedIndex = Properties.Settings.Default.patternMode;
+
                 if (comboBox_portSpeed.Items.Contains(comboBox_portSpeed.Text)) comboBox_portSpeed.SelectedItem = comboBox_portSpeed.Text;
             }
             catch
@@ -90,6 +98,8 @@ namespace SerialConsole // Terminal
         private void onErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
             ExtLog.AddLine("Error: " + e.EventType.ToString());
+            if (checkBox_sendPattern.Checked) checkBox_sendPattern.Checked = false;
+            stopSend = true;
         }
 
         private void button_list_Click(object sender, EventArgs e)
@@ -220,6 +230,11 @@ namespace SerialConsole // Terminal
 
         private void onDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+           // var d = _serialPort.
+           // load serial data
+           // check for reply mode
+           // convert to text or raw data
+
             if (checkBox_pause.Checked)
             {
                 _serialPort.DiscardInBuffer();
@@ -385,6 +400,11 @@ namespace SerialConsole // Terminal
                 Properties.Settings.Default.handshake = comboBox_handshake.SelectedIndex;
                 Properties.Settings.Default.parity = comboBox_parity.SelectedIndex;                
                 Properties.Settings.Default.stopBits = comboBox_stopBits.SelectedIndex;
+
+                Properties.Settings.Default.pattern = textBox_sendPattern.Text;
+                Properties.Settings.Default.patternReply = textBox_receivePattern.Text;
+                Properties.Settings.Default.patternDelay = int.Parse(textBox_patternDelay.Text);
+                Properties.Settings.Default.patternMode = comboBox_pattern.SelectedIndex;
 
                 Properties.Settings.Default.Save();
 
@@ -562,9 +582,60 @@ namespace SerialConsole // Terminal
             stopSend = true;
         }
 
-        private void label5_Click(object sender, EventArgs e)
+        private void checkBox_sendPattern_CheckedChanged(object sender, EventArgs e)
         {
+            if (!_serialPort.IsOpen) return;
 
+            if (checkBox_sendPattern.Checked)
+            {
+                sendPattern.Clear();
+                receivePattern.Clear();
+                receiveMatchBuffer.Clear();
+
+                var patternDelay = int.Parse(textBox_patternDelay.Text);
+                if (patternDelay < 0) patternDelay = 0;
+
+                var c = textBox_sendPattern.Text.ToUpperInvariant().Where(v => hexChars.Contains(v));
+                string s = string.Concat(c);
+                if ((s.Length % 2) != 0) s += "0";
+                for (var i = 0; i < s.Length; i += 2) sendPattern.Add(hexToByte(s.Substring(i, 2)));
+
+                c = textBox_receivePattern.Text.ToUpperInvariant().Where(v => hexChars.Contains(v));
+                s = string.Concat(c);
+                if ((s.Length % 2) != 0) s += "0";
+                for (var i = 0; i < s.Length; i += 2) receivePattern.Add(hexToByte(s.Substring(i, 2)));
+
+                if (comboBox_pattern.SelectedIndex == 0)
+                {
+                    try { 
+                        _serialPort.Write(sendPattern.ToArray(), 0, sendPattern.Count);
+                        ExtLog.AddLine(ts() + " " + s);
+                    } catch (Exception ex)
+                    {
+                        ExtLog.AddLine(ts() + " " + ex.Message);
+                    }
+                checkBox_sendPattern.Checked = false;
+                } else if (comboBox_pattern.SelectedIndex == 1)
+                {
+                    while (checkBox_sendPattern.Checked && _serialPort.IsOpen)
+                    {
+                        try { 
+                            _serialPort.Write(sendPattern.ToArray(), 0, sendPattern.Count);
+                            ExtLog.AddLine(ts() + " " + s);
+                        } catch (Exception ex)
+                        {
+                            ExtLog.AddLine(ts() + " " + ex.Message);
+                            checkBox_sendPattern.Checked = false;
+                        }
+                    if (patternDelay != 0) Thread.Sleep(patternDelay);
+                        Application.DoEvents();
+                        this.Refresh();
+                    }
+                }
+            } else
+            {
+                // not checked
+            }
         }
     }
 
