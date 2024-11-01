@@ -70,5 +70,65 @@ namespace SerialConsole.Properties {
                 this["lastLE"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        public int timeout {
+            get {
+                return ((int)(this["timeout"]));
+            }
+            set {
+                this["timeout"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int bitLength {
+            get {
+                return ((int)(this["bitLength"]));
+            }
+            set {
+                this["bitLength"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int handshake {
+            get {
+                return ((int)(this["handshake"]));
+            }
+            set {
+                this["handshake"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int parity {
+            get {
+                return ((int)(this["parity"]));
+            }
+            set {
+                this["parity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int stopBits {
+            get {
+                return ((int)(this["stopBits"]));
+            }
+            set {
+                this["stopBits"] = value;
+            }
+        }
     }
 }

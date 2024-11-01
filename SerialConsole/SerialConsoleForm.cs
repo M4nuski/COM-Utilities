@@ -56,6 +56,12 @@ namespace SerialConsole // Terminal
                 comboBox_portSpeed.Text = Properties.Settings.Default.lastPortSpeed;
                 comboBox_Format.SelectedIndex = Properties.Settings.Default.lastFormat;
                 comboBox_LE.SelectedIndex = Properties.Settings.Default.lastLE;
+              
+                timeout_textBox.Text = Properties.Settings.Default.timeout.ToString("D");
+                comboBox_bitLength.SelectedIndex = Properties.Settings.Default.bitLength;
+                comboBox_handshake.SelectedIndex = Properties.Settings.Default.handshake;
+                comboBox_parity.SelectedIndex = Properties.Settings.Default.parity;
+                comboBox_stopBits.SelectedIndex = Properties.Settings.Default.stopBits;
 
                 if (comboBox_portSpeed.Items.Contains(comboBox_portSpeed.Text)) comboBox_portSpeed.SelectedItem = comboBox_portSpeed.Text;
             }
@@ -105,11 +111,69 @@ namespace SerialConsole // Terminal
             try
             {
                 _serialPort.PortName = comboBox_portName.Text;
+
                 _serialPort.BaudRate = int.Parse(comboBox_portSpeed.Text);
-                _serialPort.Parity = Parity.None;
-                _serialPort.DataBits = 8;
-                _serialPort.StopBits = StopBits.One;
-                _serialPort.Handshake = Handshake.None;
+
+                switch (comboBox_bitLength.SelectedIndex)
+                {
+                    case 0:
+                        _serialPort.DataBits = 7;
+                        break;
+                    case 1:
+                        _serialPort.DataBits = 8;
+                        break;
+                }
+
+                switch (comboBox_handshake.SelectedIndex)
+                {
+                    case 0:
+                        _serialPort.Handshake = Handshake.None;
+                        break;
+                    case 1:
+                        _serialPort.Handshake = Handshake.RequestToSend;
+                        break;
+                    case 2:
+                        _serialPort.Handshake = Handshake.XOnXOff;
+                        break;
+                    case 3:
+                        _serialPort.Handshake = Handshake.RequestToSendXOnXOff;
+                        break;
+                }
+
+                switch (comboBox_parity.SelectedIndex)
+                {
+                    case 0:
+                        _serialPort.Parity = Parity.None;
+                        break;
+                    case 1:
+                        _serialPort.Parity = Parity.Odd;
+                        break;
+                    case 2:
+                        _serialPort.Parity = Parity.Even;
+                        break;
+                    case 3:
+                        _serialPort.Parity = Parity.Mark;
+                        break;
+                    case 4:
+                        _serialPort.Parity = Parity.Space;
+                        break;
+                }
+
+                switch (comboBox_stopBits.SelectedIndex)
+                {
+                    case 0:
+                        _serialPort.StopBits = StopBits.None;
+                        break;
+                    case 1:
+                        _serialPort.StopBits = StopBits.One;
+                        break;
+                    case 2:
+                        _serialPort.StopBits = StopBits.OnePointFive;
+                        break;
+                    case 3:
+                        _serialPort.StopBits = StopBits.Two;
+                        break;
+                }
 
                 // Set the read/write timeouts
                 int timeout;
@@ -315,6 +379,12 @@ namespace SerialConsole // Terminal
                 Properties.Settings.Default.lastLE = comboBox_LE.SelectedIndex;
                 Properties.Settings.Default.lastFormat = comboBox_Format.SelectedIndex;
 
+                Properties.Settings.Default.timeout = int.Parse(timeout_textBox.Text);
+                Properties.Settings.Default.bitLength = comboBox_bitLength.SelectedIndex;
+                Properties.Settings.Default.handshake = comboBox_handshake.SelectedIndex;
+                Properties.Settings.Default.parity = comboBox_parity.SelectedIndex;                
+                Properties.Settings.Default.stopBits = comboBox_stopBits.SelectedIndex;
+
                 Properties.Settings.Default.Save();
 
                 if (history.Count != 0)
@@ -423,7 +493,7 @@ namespace SerialConsole // Terminal
 
         private void checkBox_CTS_CheckedChanged(object sender, EventArgs e)
         {
-            _serialPort.Handshake = checkBox_CTS.Checked ? Handshake.RequestToSend : Handshake.None;
+         //   _serialPort.Handshake = checkBox_CTS.Checked ? Handshake.RequestToSend : Handshake.None;
         }
 
         private void button_sendBIN_Click(object sender, EventArgs e)

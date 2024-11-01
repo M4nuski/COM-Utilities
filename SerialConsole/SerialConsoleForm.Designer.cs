@@ -43,7 +43,6 @@ namespace SerialConsole
             this.comboBox_Format = new System.Windows.Forms.ComboBox();
             this.comboBox_inputType = new System.Windows.Forms.ComboBox();
             this.checkBox_timeStamps = new System.Windows.Forms.CheckBox();
-            this.checkBox_CTS = new System.Windows.Forms.CheckBox();
             this.button_sendBIN = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -52,6 +51,11 @@ namespace SerialConsole
             this.SendBinChunk_textBox = new System.Windows.Forms.TextBox();
             this.SendBinPause_textBox = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.comboBox_stopBits = new System.Windows.Forms.ComboBox();
+            this.comboBox_parity = new System.Windows.Forms.ComboBox();
+            this.comboBox_bitLength = new System.Windows.Forms.ComboBox();
+            this.comboBox_handshake = new System.Windows.Forms.ComboBox();
             this.timeout_textBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -64,7 +68,7 @@ namespace SerialConsole
             // 
             this.button_list.Location = new System.Drawing.Point(3, 3);
             this.button_list.Name = "button_list";
-            this.button_list.Size = new System.Drawing.Size(105, 23);
+            this.button_list.Size = new System.Drawing.Size(91, 23);
             this.button_list.TabIndex = 0;
             this.button_list.Text = "List Devices";
             this.button_list.UseVisualStyleBackColor = true;
@@ -72,9 +76,9 @@ namespace SerialConsole
             // 
             // button_open
             // 
-            this.button_open.Location = new System.Drawing.Point(3, 32);
+            this.button_open.Location = new System.Drawing.Point(3, 57);
             this.button_open.Name = "button_open";
-            this.button_open.Size = new System.Drawing.Size(105, 23);
+            this.button_open.Size = new System.Drawing.Size(91, 23);
             this.button_open.TabIndex = 1;
             this.button_open.Text = "Open Device";
             this.button_open.UseVisualStyleBackColor = true;
@@ -86,11 +90,11 @@ namespace SerialConsole
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox_output.Font = new System.Drawing.Font("Consolas", 12F);
-            this.textBox_output.Location = new System.Drawing.Point(10, 78);
+            this.textBox_output.Location = new System.Drawing.Point(10, 106);
             this.textBox_output.Multiline = true;
             this.textBox_output.Name = "textBox_output";
             this.textBox_output.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_output.Size = new System.Drawing.Size(1236, 681);
+            this.textBox_output.Size = new System.Drawing.Size(1236, 653);
             this.textBox_output.TabIndex = 2;
             // 
             // button_clear
@@ -107,9 +111,9 @@ namespace SerialConsole
             // comboBox_portName
             // 
             this.comboBox_portName.FormattingEnabled = true;
-            this.comboBox_portName.Location = new System.Drawing.Point(114, 3);
+            this.comboBox_portName.Location = new System.Drawing.Point(100, 3);
             this.comboBox_portName.Name = "comboBox_portName";
-            this.comboBox_portName.Size = new System.Drawing.Size(104, 23);
+            this.comboBox_portName.Size = new System.Drawing.Size(91, 23);
             this.comboBox_portName.TabIndex = 4;
             // 
             // comboBox_portSpeed
@@ -122,12 +126,15 @@ namespace SerialConsole
             "2400",
             "4800",
             "9600",
+            "14400",
             "19200",
+            "28800",
+            "38400",
             "57600",
             "115200"});
-            this.comboBox_portSpeed.Location = new System.Drawing.Point(224, 3);
+            this.comboBox_portSpeed.Location = new System.Drawing.Point(294, 3);
             this.comboBox_portSpeed.Name = "comboBox_portSpeed";
-            this.comboBox_portSpeed.Size = new System.Drawing.Size(104, 23);
+            this.comboBox_portSpeed.Size = new System.Drawing.Size(91, 23);
             this.comboBox_portSpeed.TabIndex = 5;
             // 
             // checkBox_pause
@@ -155,9 +162,9 @@ namespace SerialConsole
             // 
             // button_close
             // 
-            this.button_close.Location = new System.Drawing.Point(114, 32);
+            this.button_close.Location = new System.Drawing.Point(100, 57);
             this.button_close.Name = "button_close";
-            this.button_close.Size = new System.Drawing.Size(105, 23);
+            this.button_close.Size = new System.Drawing.Size(91, 23);
             this.button_close.TabIndex = 10;
             this.button_close.Text = "Close Device";
             this.button_close.UseVisualStyleBackColor = true;
@@ -232,17 +239,6 @@ namespace SerialConsole
             this.checkBox_timeStamps.Text = "Timestamps";
             this.checkBox_timeStamps.UseVisualStyleBackColor = true;
             // 
-            // checkBox_CTS
-            // 
-            this.checkBox_CTS.AutoSize = true;
-            this.checkBox_CTS.Location = new System.Drawing.Point(334, 6);
-            this.checkBox_CTS.Name = "checkBox_CTS";
-            this.checkBox_CTS.Size = new System.Drawing.Size(49, 19);
-            this.checkBox_CTS.TabIndex = 16;
-            this.checkBox_CTS.Text = "CTS";
-            this.checkBox_CTS.UseVisualStyleBackColor = true;
-            this.checkBox_CTS.CheckedChanged += new System.EventHandler(this.checkBox_CTS_CheckedChanged);
-            // 
             // button_sendBIN
             // 
             this.button_sendBIN.Location = new System.Drawing.Point(4, 3);
@@ -308,35 +304,105 @@ namespace SerialConsole
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.label4);
+            this.panel2.Controls.Add(this.comboBox_stopBits);
+            this.panel2.Controls.Add(this.comboBox_parity);
+            this.panel2.Controls.Add(this.comboBox_bitLength);
+            this.panel2.Controls.Add(this.comboBox_handshake);
             this.panel2.Controls.Add(this.timeout_textBox);
             this.panel2.Controls.Add(this.label3);
             this.panel2.Controls.Add(this.button_list);
             this.panel2.Controls.Add(this.comboBox_portName);
-            this.panel2.Controls.Add(this.checkBox_CTS);
             this.panel2.Controls.Add(this.comboBox_portSpeed);
             this.panel2.Controls.Add(this.button_open);
             this.panel2.Controls.Add(this.button_close);
             this.panel2.Location = new System.Drawing.Point(12, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(404, 60);
+            this.panel2.Size = new System.Drawing.Size(393, 88);
             this.panel2.TabIndex = 19;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(222, 8);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(68, 15);
+            this.label4.TabIndex = 23;
+            this.label4.Text = "Baud Rate:";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // comboBox_stopBits
+            // 
+            this.comboBox_stopBits.FormattingEnabled = true;
+            this.comboBox_stopBits.Items.AddRange(new object[] {
+            "No Stop Bits",
+            "1 Stop Bit",
+            "1.5 Stop Bits",
+            "2 Stop Bits"});
+            this.comboBox_stopBits.Location = new System.Drawing.Point(294, 30);
+            this.comboBox_stopBits.Name = "comboBox_stopBits";
+            this.comboBox_stopBits.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_stopBits.TabIndex = 22;
+            this.comboBox_stopBits.Text = "No Stop Bits";
+            // 
+            // comboBox_parity
+            // 
+            this.comboBox_parity.FormattingEnabled = true;
+            this.comboBox_parity.Items.AddRange(new object[] {
+            "No Parity",
+            "Odd",
+            "Even",
+            "Mark",
+            "Space"});
+            this.comboBox_parity.Location = new System.Drawing.Point(197, 30);
+            this.comboBox_parity.Name = "comboBox_parity";
+            this.comboBox_parity.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_parity.TabIndex = 21;
+            this.comboBox_parity.Text = "No Parity";
+            // 
+            // comboBox_bitLength
+            // 
+            this.comboBox_bitLength.FormattingEnabled = true;
+            this.comboBox_bitLength.Items.AddRange(new object[] {
+            "7 Bits",
+            "8 Bits"});
+            this.comboBox_bitLength.Location = new System.Drawing.Point(4, 30);
+            this.comboBox_bitLength.Name = "comboBox_bitLength";
+            this.comboBox_bitLength.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_bitLength.TabIndex = 20;
+            this.comboBox_bitLength.Text = "8 Bits";
+            // 
+            // comboBox_handshake
+            // 
+            this.comboBox_handshake.FormattingEnabled = true;
+            this.comboBox_handshake.Items.AddRange(new object[] {
+            "No Handshake",
+            "RTS/CTS",
+            "XonXoff",
+            "RTS+XonXoff"});
+            this.comboBox_handshake.Location = new System.Drawing.Point(101, 30);
+            this.comboBox_handshake.Name = "comboBox_handshake";
+            this.comboBox_handshake.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_handshake.TabIndex = 19;
+            this.comboBox_handshake.Text = "No Handshake";
             // 
             // timeout_textBox
             // 
-            this.timeout_textBox.Location = new System.Drawing.Point(332, 32);
+            this.timeout_textBox.Location = new System.Drawing.Point(294, 57);
             this.timeout_textBox.Name = "timeout_textBox";
-            this.timeout_textBox.Size = new System.Drawing.Size(65, 21);
+            this.timeout_textBox.Size = new System.Drawing.Size(91, 21);
             this.timeout_textBox.TabIndex = 18;
             this.timeout_textBox.Text = "500";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(237, 36);
+            this.label3.Location = new System.Drawing.Point(196, 60);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(93, 15);
             this.label3.TabIndex = 17;
             this.label3.Text = "RX/TX Timeout:";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // panel3
             // 
@@ -396,7 +462,6 @@ namespace SerialConsole
         private System.Windows.Forms.ComboBox comboBox_Format;
         private System.Windows.Forms.ComboBox comboBox_inputType;
         private System.Windows.Forms.CheckBox checkBox_timeStamps;
-        private System.Windows.Forms.CheckBox checkBox_CTS;
         private System.ComponentModel.IContainer components;
         private System.Windows.Forms.Button button_sendBIN;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
@@ -409,6 +474,11 @@ namespace SerialConsole
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.TextBox timeout_textBox;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox comboBox_parity;
+        private System.Windows.Forms.ComboBox comboBox_bitLength;
+        private System.Windows.Forms.ComboBox comboBox_handshake;
+        private System.Windows.Forms.ComboBox comboBox_stopBits;
+        private System.Windows.Forms.Label label4;
     }
 }
 
