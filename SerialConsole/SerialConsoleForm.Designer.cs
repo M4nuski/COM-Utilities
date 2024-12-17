@@ -46,6 +46,13 @@ namespace SerialConsole
             this.button_sendBIN = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button_Resend = new System.Windows.Forms.Button();
+            this.checkBox_sendFTR = new System.Windows.Forms.CheckBox();
+            this.checkBox_sendHDR = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBox_FTR = new System.Windows.Forms.TextBox();
+            this.textBox_HDR = new System.Windows.Forms.TextBox();
             this.button_X = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -267,6 +274,13 @@ namespace SerialConsole
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.button_Resend);
+            this.panel1.Controls.Add(this.checkBox_sendFTR);
+            this.panel1.Controls.Add(this.checkBox_sendHDR);
+            this.panel1.Controls.Add(this.label8);
+            this.panel1.Controls.Add(this.label7);
+            this.panel1.Controls.Add(this.textBox_FTR);
+            this.panel1.Controls.Add(this.textBox_HDR);
             this.panel1.Controls.Add(this.button_X);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
@@ -275,23 +289,86 @@ namespace SerialConsole
             this.panel1.Controls.Add(this.button_sendBIN);
             this.panel1.Location = new System.Drawing.Point(411, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(255, 60);
+            this.panel1.Size = new System.Drawing.Size(255, 106);
             this.panel1.TabIndex = 18;
+            // 
+            // button_Resend
+            // 
+            this.button_Resend.Location = new System.Drawing.Point(4, 53);
+            this.button_Resend.Name = "button_Resend";
+            this.button_Resend.Size = new System.Drawing.Size(75, 23);
+            this.button_Resend.TabIndex = 29;
+            this.button_Resend.Text = "Resend";
+            this.button_Resend.UseVisualStyleBackColor = true;
+            this.button_Resend.Click += new System.EventHandler(this.button_Resend_Click);
+            // 
+            // checkBox_sendFTR
+            // 
+            this.checkBox_sendFTR.AutoSize = true;
+            this.checkBox_sendFTR.Location = new System.Drawing.Point(84, 84);
+            this.checkBox_sendFTR.Name = "checkBox_sendFTR";
+            this.checkBox_sendFTR.Size = new System.Drawing.Size(15, 14);
+            this.checkBox_sendFTR.TabIndex = 28;
+            this.checkBox_sendFTR.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_sendHDR
+            // 
+            this.checkBox_sendHDR.AutoSize = true;
+            this.checkBox_sendHDR.Location = new System.Drawing.Point(84, 58);
+            this.checkBox_sendHDR.Name = "checkBox_sendHDR";
+            this.checkBox_sendHDR.Size = new System.Drawing.Size(15, 14);
+            this.checkBox_sendHDR.TabIndex = 27;
+            this.checkBox_sendHDR.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(108, 83);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(45, 15);
+            this.label8.TabIndex = 26;
+            this.label8.Text = "Footer:";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(102, 57);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(51, 15);
+            this.label7.TabIndex = 25;
+            this.label7.Text = "Header:";
+            // 
+            // textBox_FTR
+            // 
+            this.textBox_FTR.Location = new System.Drawing.Point(155, 80);
+            this.textBox_FTR.Name = "textBox_FTR";
+            this.textBox_FTR.Size = new System.Drawing.Size(91, 21);
+            this.textBox_FTR.TabIndex = 24;
+            this.textBox_FTR.Text = "1A";
+            // 
+            // textBox_HDR
+            // 
+            this.textBox_HDR.Location = new System.Drawing.Point(155, 54);
+            this.textBox_HDR.Name = "textBox_HDR";
+            this.textBox_HDR.Size = new System.Drawing.Size(91, 21);
+            this.textBox_HDR.TabIndex = 23;
+            this.textBox_HDR.Text = "F0 0D 0A";
             // 
             // button_X
             // 
-            this.button_X.Location = new System.Drawing.Point(4, 28);
+            this.button_X.Location = new System.Drawing.Point(4, 78);
             this.button_X.Name = "button_X";
-            this.button_X.Size = new System.Drawing.Size(29, 23);
+            this.button_X.Size = new System.Drawing.Size(74, 23);
             this.button_X.TabIndex = 22;
-            this.button_X.Text = "X";
+            this.button_X.Text = "CANCEL";
             this.button_X.UseVisualStyleBackColor = true;
             this.button_X.Click += new System.EventHandler(this.button_X_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(46, 32);
+            this.label2.Location = new System.Drawing.Point(46, 31);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(107, 15);
             this.label2.TabIndex = 21;
@@ -316,7 +393,7 @@ namespace SerialConsole
             // 
             // SendBinPause_textBox
             // 
-            this.SendBinPause_textBox.Location = new System.Drawing.Point(155, 29);
+            this.SendBinPause_textBox.Location = new System.Drawing.Point(155, 28);
             this.SendBinPause_textBox.Name = "SendBinPause_textBox";
             this.SendBinPause_textBox.Size = new System.Drawing.Size(91, 21);
             this.SendBinPause_textBox.TabIndex = 18;
@@ -536,7 +613,7 @@ namespace SerialConsole
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SerialConsoleForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "COM Port Console - 20241101a";
+            this.Text = "COM Port Console - 20241214a";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
@@ -593,6 +670,13 @@ namespace SerialConsole
         private System.Windows.Forms.TextBox textBox_sendPattern;
         private System.Windows.Forms.CheckBox checkBox_sendPattern;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBox_FTR;
+        private System.Windows.Forms.TextBox textBox_HDR;
+        private System.Windows.Forms.Button button_Resend;
+        private System.Windows.Forms.CheckBox checkBox_sendFTR;
+        private System.Windows.Forms.CheckBox checkBox_sendHDR;
     }
 }
 

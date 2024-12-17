@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.IO.Ports;
 using System.Threading;
 using System.IO;
+using System.Net.Http;
+using System.Xml.Linq;
 
 namespace SerialConsole // Terminal
 {
@@ -22,10 +24,13 @@ namespace SerialConsole // Terminal
         List<byte> sendPattern = new List<byte>();
         List<byte> receivePattern = new List<byte>();
         List<byte> receiveMatchBuffer = new List<byte>();
+        List<byte> headerPattern = new List<byte>();
+        List<byte> footerPattern = new List<byte>();
 
         static string _history_fileName = "history.txt";
         List<string> history = new List<string>();
         int historyIndex = 0;
+        string lastFileName = "";
 
         byte[] dataBuffer = new byte[1024];
 
@@ -80,7 +85,6 @@ namespace SerialConsole // Terminal
             }
 
         }
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -230,16 +234,18 @@ namespace SerialConsole // Terminal
 
         private void onDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-           // var d = _serialPort.
-           // load serial data
-           // check for reply mode
-           // convert to text or raw data
-
             if (checkBox_pause.Checked)
             {
                 _serialPort.DiscardInBuffer();
                 return;
             }
+
+           // var d = _serialPort.
+           // load serial data
+           // check for reply mode
+           // convert to text or raw data
+
+
 
             if (_formatIndex == 0)  // text only
             {
@@ -519,22 +525,40 @@ namespace SerialConsole // Terminal
             openFileDialog1.Filter = "Binary|*.bin|All Files|*.*";
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
 
-            var f = File.OpenRead(openFileDialog1.FileName);
-            ExtLog.AddLine("Reading file " + openFileDialog1.FileName);
-            stopSend = false;
+            try
+            {
+                var f = File.OpenRead(openFileDialog1.FileName);
+                ExtLog.AddLine("Reading file " + openFileDialog1.FileName);
+                stopSend = false;
+                lastFileName = openFileDialog1.FileName;
+                sendBIN(f);
+                f.Close();
+            } catch (Exception ex)
+            {
+                ExtLog.AddLine(ex.Message);
+                return;
+            }
+        }
+
+        private void sendBIN(FileStream f)
+        {
 
             int chunkSize;
             try
             {
                 chunkSize = int.Parse(SendBinChunk_textBox.Text);
-            } 
+            }
             catch
             {
                 ExtLog.AddLine("Invalid chunk size value");
                 chunkSize = 256;
                 SendBinChunk_textBox.Text = "256";
             }
-            if (chunkSize < 0) chunkSize = 1;
+            if (chunkSize < 0)
+            {
+                chunkSize = 1;
+                SendBinChunk_textBox.Text = "1";
+            }
 
             if (chunkSize > _serialPort.WriteBufferSize) chunkSize = _serialPort.WriteBufferSize;
 
@@ -542,29 +566,50 @@ namespace SerialConsole // Terminal
             try
             {
                 chunkDelay = int.Parse(SendBinPause_textBox.Text);
-            } 
+            }
             catch
             {
                 ExtLog.AddLine("Invalid chunk delay value");
                 chunkDelay = 0;
                 SendBinPause_textBox.Text = "0";
             }
-            if (chunkDelay < 0) chunkDelay = 0;
+            if (chunkDelay < 0)
+            {
+                chunkDelay = 0;
+                SendBinPause_textBox.Text = "0";
+            }
+
+            var totalSent = 0;
+
+            if (checkBox_sendHDR.Checked) {
+                try
+                {
+                    var hData = textBoxToByteList(textBox_HDR).ToArray();
+                    _serialPort.Write(hData, 0, hData.Length);
+                    totalSent += hData.Length;
+                    ExtLog.AddLine(ts() + "-> Header " + textBox_HDR.Text);
+                }
+                catch (Exception ex)
+                {
+                    ExtLog.AddLine(ts() + " " + ex.Message);
+                }
+            }
 
             var data = new byte[chunkSize];
             var dataLength = f.Read(data, 0, chunkSize);
- 
+
             if ((1000 * chunkSize / (_serialPort.BaudRate / 10)) > _serialPort.WriteTimeout) ExtLog.AddLine("**** Chunk size might be too high for baudrate/timeout ****");
 
-            var totalSent = 0; 
 
-            while ((dataLength > 0) && !stopSend) {
+            while ((dataLength > 0) && !stopSend)
+            {
                 try
                 {
                     _serialPort.Write(data, 0, dataLength);
                     totalSent += dataLength;
                     ExtLog.AddLine(ts() + "-> " + dataLength.ToString("D"));
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     ExtLog.AddLine(ts() + " " + ex.Message);
                 }
@@ -573,13 +618,40 @@ namespace SerialConsole // Terminal
                 this.Refresh();
                 dataLength = f.Read(data, 0, chunkSize);
             }
+
+            if (checkBox_sendFTR.Checked)
+            {
+                try
+                {
+                    var fData = textBoxToByteList(textBox_FTR).ToArray();
+                    _serialPort.Write(fData, 0, fData.Length);
+                    totalSent += fData.Length;
+                    ExtLog.AddLine(ts() + "-> Footer " + textBox_FTR.Text);
+                }
+                catch (Exception ex)
+                {
+                    ExtLog.AddLine(ts() + " " + ex.Message);
+                }
+            }
+
             ExtLog.AddLine($"Sent {totalSent}/{f.Length} bytes");
-            f.Close();
+            
         }
 
         private void button_X_Click(object sender, EventArgs e)
         {
             stopSend = true;
+        }
+
+        public List<byte> textBoxToByteList(TextBox tb)
+        {
+            var c = tb.Text.ToUpperInvariant().Where(v => hexChars.Contains(v));
+            string s = string.Concat(c);
+            if ((s.Length % 2) != 0) s += "0";
+            var result = new List<byte>();
+            for (var i = 0; i < s.Length; i += 2) result.Add(hexToByte(s.Substring(i, 2)));
+            return result;
+
         }
 
         private void checkBox_sendPattern_CheckedChanged(object sender, EventArgs e)
@@ -595,21 +667,23 @@ namespace SerialConsole // Terminal
                 var patternDelay = int.Parse(textBox_patternDelay.Text);
                 if (patternDelay < 0) patternDelay = 0;
 
-                var c = textBox_sendPattern.Text.ToUpperInvariant().Where(v => hexChars.Contains(v));
-                string s = string.Concat(c);
-                if ((s.Length % 2) != 0) s += "0";
-                for (var i = 0; i < s.Length; i += 2) sendPattern.Add(hexToByte(s.Substring(i, 2)));
+                //var c = textBox_sendPattern.Text.ToUpperInvariant().Where(v => hexChars.Contains(v));
+                //string s = string.Concat(c);
+                //if ((s.Length % 2) != 0) s += "0";
+                //for (var i = 0; i < s.Length; i += 2) sendPattern.Add(hexToByte(s.Substring(i, 2)));
+                sendPattern = textBoxToByteList(textBox_sendPattern);
 
-                c = textBox_receivePattern.Text.ToUpperInvariant().Where(v => hexChars.Contains(v));
-                s = string.Concat(c);
-                if ((s.Length % 2) != 0) s += "0";
-                for (var i = 0; i < s.Length; i += 2) receivePattern.Add(hexToByte(s.Substring(i, 2)));
+                //c = textBox_receivePattern.Text.ToUpperInvariant().Where(v => hexChars.Contains(v));
+                //s = string.Concat(c);
+                //if ((s.Length % 2) != 0) s += "0";
+                //for (var i = 0; i < s.Length; i += 2) receivePattern.Add(hexToByte(s.Substring(i, 2)));
+                receivePattern = textBoxToByteList(textBox_receivePattern);
 
                 if (comboBox_pattern.SelectedIndex == 0)
                 {
                     try { 
                         _serialPort.Write(sendPattern.ToArray(), 0, sendPattern.Count);
-                        ExtLog.AddLine(ts() + " " + s);
+                        ExtLog.AddLine(ts() + " " + textBox_sendPattern.Text);
                     } catch (Exception ex)
                     {
                         ExtLog.AddLine(ts() + " " + ex.Message);
@@ -621,7 +695,7 @@ namespace SerialConsole // Terminal
                     {
                         try { 
                             _serialPort.Write(sendPattern.ToArray(), 0, sendPattern.Count);
-                            ExtLog.AddLine(ts() + " " + s);
+                            ExtLog.AddLine(ts() + " " + textBox_sendPattern.Text);
                         } catch (Exception ex)
                         {
                             ExtLog.AddLine(ts() + " " + ex.Message);
@@ -635,6 +709,26 @@ namespace SerialConsole // Terminal
             } else
             {
                 // not checked
+            }
+        }
+
+        private void button_Resend_Click(object sender, EventArgs e)
+        {
+            if (!_serialPort.IsOpen) return;
+            if (lastFileName == "") return;
+
+            try
+            {
+                var f = File.OpenRead(lastFileName);
+                ExtLog.AddLine("Reading file " + lastFileName);
+                stopSend = false;
+                sendBIN(f);
+                f.Close();
+            }
+            catch (Exception ex)
+            {
+                ExtLog.AddLine(ex.Message);
+                return;
             }
         }
     }
