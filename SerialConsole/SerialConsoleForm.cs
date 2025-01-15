@@ -32,6 +32,9 @@ namespace SerialConsole // Terminal
         int historyIndex = 0;
         string lastFileName = "";
 
+        bool capturing = false;
+        FileStream captureFile;
+
         byte[] dataBuffer = new byte[1024];
 
         StringBuilder sb = new StringBuilder();
@@ -44,7 +47,6 @@ namespace SerialConsole // Terminal
         */
         readonly string[] LE = new string[3] { "\r\n", "\n", "" };
         readonly List<char> hexChars = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-
 
         public SerialConsoleForm()
         {
@@ -259,6 +261,12 @@ namespace SerialConsole // Terminal
                     inText = _serialPort.ReadExisting() + " *\r\n";
                 }
                 ExtLog.Add(ts() + "" + inText);
+                if (capturing && (captureFile != null))
+                {
+                    var sb = Encoding.ASCII.GetBytes(inText);
+                    captureFile.Write(sb, 0, sb.Length);
+                    updateCapturedLabel(captureFile.Length.ToString());
+                }
                 return;
             }
             else
@@ -270,6 +278,11 @@ namespace SerialConsole // Terminal
                 {
                     if (toRead > 8) toRead = 8;
                     toRead = _serialPort.Read(dataBuffer, 0, toRead);
+                    if (capturing && (captureFile != null))
+                    {
+                        captureFile.Write(dataBuffer, 0, toRead);
+                        updateCapturedLabel(captureFile.Length.ToString());
+                    }
 
                     var binStr = "";
                     var hexStr = "";
@@ -387,6 +400,13 @@ namespace SerialConsole // Terminal
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (captureFile != null) try
+                {
+                    captureFile.Close();
+                } catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             if (_serialPort.IsOpen)
             {
                 _serialPort.DiscardOutBuffer();
@@ -524,7 +544,7 @@ namespace SerialConsole // Terminal
             openFileDialog1.FileName = "*.*";
             openFileDialog1.Filter = "Binary|*.bin|All Files|*.*";
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
-
+            label_sent.Text = "0/0";
             try
             {
                 var f = File.OpenRead(openFileDialog1.FileName);
@@ -607,15 +627,17 @@ namespace SerialConsole // Terminal
                 {
                     _serialPort.Write(data, 0, dataLength);
                     totalSent += dataLength;
-                    ExtLog.AddLine(ts() + "-> " + dataLength.ToString("D"));
+                    ExtLog.AddLine(ts() + "-> " + dataLength.ToString("D"));                    
                 }
                 catch (Exception ex)
                 {
                     ExtLog.AddLine(ts() + " " + ex.Message);
                 }
+                label_sent.Text = $"{totalSent}/{f.Length}";
                 if (chunkDelay != 0) Thread.Sleep(chunkDelay);
                 Application.DoEvents();
                 this.Refresh();
+  
                 dataLength = f.Read(data, 0, chunkSize);
             }
 
@@ -730,6 +752,51 @@ namespace SerialConsole // Terminal
                 ExtLog.AddLine(ex.Message);
                 return;
             }
+        }
+
+        private void button_capture_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() != DialogResult.OK) return;
+            try
+            {
+                if (captureFile != null)
+                {
+                    captureFile.Close();
+                    captureFile = null;
+                }
+                captureFile = File.OpenWrite(saveFileDialog1.FileName);
+                capturing = true;
+                ExtLog.AddLine("Capture Started in " + saveFileDialog1.FileName);
+                label_received.Text = "0";
+            } catch (Exception ex) {
+                ExtLog.AddLine(ex.Message);
+                capturing = false;
+                if (captureFile != null) {
+                    captureFile.Close();
+                    captureFile = null;
+                }
+            }
+
+        }
+
+        private void button_stopCapture_Click(object sender, EventArgs e)
+        {
+            capturing = false;
+            if (captureFile != null)
+            {
+                captureFile.Close();
+                captureFile = null;
+                ExtLog.AddLine("Capture Stopped.");
+            }
+        }
+
+        private void updateCapturedLabel(string s)
+        {
+            if (label_received.InvokeRequired)
+            {
+                label_received.Invoke((void_stringDelegate)updateCapturedLabel, new object[] { s });
+            }
+            else label_received.Text = s;
         }
     }
 
