@@ -29,6 +29,7 @@ namespace SerialConsole
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.button_list = new System.Windows.Forms.Button();
             this.button_open = new System.Windows.Forms.Button();
             this.textBox_output = new System.Windows.Forms.TextBox();
@@ -60,6 +61,7 @@ namespace SerialConsole
             this.SendBinChunk_textBox = new System.Windows.Forms.TextBox();
             this.SendBinPause_textBox = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.checkBoxDTRenable = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.comboBox_stopBits = new System.Windows.Forms.ComboBox();
             this.comboBox_parity = new System.Windows.Forms.ComboBox();
@@ -67,6 +69,7 @@ namespace SerialConsole
             this.comboBox_handshake = new System.Windows.Forms.ComboBox();
             this.timeout_textBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.label_lineStatus = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.Label();
@@ -81,6 +84,7 @@ namespace SerialConsole
             this.button_capture = new System.Windows.Forms.Button();
             this.label_received = new System.Windows.Forms.Label();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -420,6 +424,7 @@ namespace SerialConsole
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.checkBoxDTRenable);
             this.panel2.Controls.Add(this.label4);
             this.panel2.Controls.Add(this.comboBox_stopBits);
             this.panel2.Controls.Add(this.comboBox_parity);
@@ -434,8 +439,21 @@ namespace SerialConsole
             this.panel2.Controls.Add(this.button_close);
             this.panel2.Location = new System.Drawing.Point(12, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(393, 88);
+            this.panel2.Size = new System.Drawing.Size(393, 106);
             this.panel2.TabIndex = 19;
+            // 
+            // checkBoxDTRenable
+            // 
+            this.checkBoxDTRenable.AutoSize = true;
+            this.checkBoxDTRenable.Checked = true;
+            this.checkBoxDTRenable.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxDTRenable.Location = new System.Drawing.Point(4, 84);
+            this.checkBoxDTRenable.Name = "checkBoxDTRenable";
+            this.checkBoxDTRenable.Size = new System.Drawing.Size(61, 22);
+            this.checkBoxDTRenable.TabIndex = 24;
+            this.checkBoxDTRenable.Text = "DTR";
+            this.checkBoxDTRenable.UseVisualStyleBackColor = true;
+            this.checkBoxDTRenable.CheckedChanged += new System.EventHandler(this.checkBoxDTRenable_CheckedChanged);
             // 
             // label4
             // 
@@ -519,6 +537,15 @@ namespace SerialConsole
             this.label3.TabIndex = 17;
             this.label3.Text = "RX/TX Timeout:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label_lineStatus
+            // 
+            this.label_lineStatus.AutoSize = true;
+            this.label_lineStatus.Location = new System.Drawing.Point(14, 121);
+            this.label_lineStatus.Name = "label_lineStatus";
+            this.label_lineStatus.Size = new System.Drawing.Size(89, 18);
+            this.label_lineStatus.TabIndex = 23;
+            this.label_lineStatus.Text = "Lines Status";
             // 
             // panel3
             // 
@@ -661,11 +688,17 @@ namespace SerialConsole
             this.saveFileDialog1.DefaultExt = "bin";
             this.saveFileDialog1.Filter = "Text|*.txt|Binary|.bin|All|*.*";
             // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // SerialConsoleForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(1256, 798);
             this.Controls.Add(this.panel5);
+            this.Controls.Add(this.label_lineStatus);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
@@ -678,7 +711,7 @@ namespace SerialConsole
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SerialConsoleForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "COM Port Console - 20250115";
+            this.Text = "COM Port Console - 20250202";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
@@ -749,6 +782,10 @@ namespace SerialConsole
         private System.Windows.Forms.Button button_capture;
         private System.Windows.Forms.Label label_received;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.Timer timer1;
+        private System.ComponentModel.IContainer components;
+        private System.Windows.Forms.Label label_lineStatus;
+        private System.Windows.Forms.CheckBox checkBoxDTRenable;
     }
 }
 

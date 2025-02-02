@@ -148,12 +148,15 @@ namespace SerialConsole // Terminal
                         break;
                     case 1:
                         _serialPort.Handshake = Handshake.RequestToSend;
+                        _serialPort.DtrEnable = checkBoxDTRenable.Checked;
+
                         break;
                     case 2:
                         _serialPort.Handshake = Handshake.XOnXOff;
                         break;
                     case 3:
                         _serialPort.Handshake = Handshake.RequestToSendXOnXOff;
+                        _serialPort.DtrEnable = checkBoxDTRenable.Checked;
                         break;
                 }
 
@@ -797,6 +800,24 @@ namespace SerialConsole // Terminal
                 label_received.Invoke((void_stringDelegate)updateCapturedLabel, new object[] { s });
             }
             else label_received.Text = s;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (!_serialPort.IsOpen) return;
+            label_lineStatus.Text = $"CDhold[{_serialPort.CDHolding}] CTShold[{_serialPort.CtsHolding}] DSRhold[{_serialPort.DsrHolding}] DTRenabled[{_serialPort.DtrEnable}]";
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (!_serialPort.IsOpen) return;
+            _serialPort.DtrEnable = !_serialPort.DtrEnable;
+        }
+
+        private void checkBoxDTRenable_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!_serialPort.IsOpen) return;
+            _serialPort.DtrEnable = checkBoxDTRenable.Checked;
         }
     }
 
