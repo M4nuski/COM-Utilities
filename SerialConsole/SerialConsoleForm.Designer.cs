@@ -61,6 +61,8 @@ namespace SerialConsole
             this.SendBinChunk_textBox = new System.Windows.Forms.TextBox();
             this.SendBinPause_textBox = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.checkBoxRTSenable = new System.Windows.Forms.CheckBox();
+            this.label_lineStatus = new System.Windows.Forms.Label();
             this.checkBoxDTRenable = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.comboBox_stopBits = new System.Windows.Forms.ComboBox();
@@ -69,8 +71,8 @@ namespace SerialConsole
             this.comboBox_handshake = new System.Windows.Forms.ComboBox();
             this.timeout_textBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.label_lineStatus = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.checkBoxTerminalMode = new System.Windows.Forms.CheckBox();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.Label();
             this.comboBox_pattern = new System.Windows.Forms.ComboBox();
@@ -260,7 +262,7 @@ namespace SerialConsole
             this.checkBox_timeStamps.AutoSize = true;
             this.checkBox_timeStamps.Checked = true;
             this.checkBox_timeStamps.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_timeStamps.Location = new System.Drawing.Point(-13, 31);
+            this.checkBox_timeStamps.Location = new System.Drawing.Point(-12, 31);
             this.checkBox_timeStamps.Name = "checkBox_timeStamps";
             this.checkBox_timeStamps.Size = new System.Drawing.Size(112, 22);
             this.checkBox_timeStamps.TabIndex = 15;
@@ -424,6 +426,8 @@ namespace SerialConsole
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.checkBoxRTSenable);
+            this.panel2.Controls.Add(this.label_lineStatus);
             this.panel2.Controls.Add(this.checkBoxDTRenable);
             this.panel2.Controls.Add(this.label4);
             this.panel2.Controls.Add(this.comboBox_stopBits);
@@ -439,8 +443,29 @@ namespace SerialConsole
             this.panel2.Controls.Add(this.button_close);
             this.panel2.Location = new System.Drawing.Point(12, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(393, 106);
+            this.panel2.Size = new System.Drawing.Size(393, 132);
             this.panel2.TabIndex = 19;
+            // 
+            // checkBoxRTSenable
+            // 
+            this.checkBoxRTSenable.AutoSize = true;
+            this.checkBoxRTSenable.Checked = true;
+            this.checkBoxRTSenable.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxRTSenable.Location = new System.Drawing.Point(71, 84);
+            this.checkBoxRTSenable.Name = "checkBoxRTSenable";
+            this.checkBoxRTSenable.Size = new System.Drawing.Size(60, 22);
+            this.checkBoxRTSenable.TabIndex = 25;
+            this.checkBoxRTSenable.Text = "RTS";
+            this.checkBoxRTSenable.UseVisualStyleBackColor = true;
+            this.checkBoxRTSenable.CheckedChanged += new System.EventHandler(this.checkBoxDTRenable_CheckedChanged);
+            // 
+            // label_lineStatus
+            // 
+            this.label_lineStatus.Location = new System.Drawing.Point(1, 109);
+            this.label_lineStatus.Name = "label_lineStatus";
+            this.label_lineStatus.Size = new System.Drawing.Size(384, 18);
+            this.label_lineStatus.TabIndex = 23;
+            this.label_lineStatus.Text = "Lines Status";
             // 
             // checkBoxDTRenable
             // 
@@ -538,27 +563,29 @@ namespace SerialConsole
             this.label3.Text = "RX/TX Timeout:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // label_lineStatus
-            // 
-            this.label_lineStatus.AutoSize = true;
-            this.label_lineStatus.Location = new System.Drawing.Point(14, 121);
-            this.label_lineStatus.Name = "label_lineStatus";
-            this.label_lineStatus.Size = new System.Drawing.Size(89, 18);
-            this.label_lineStatus.TabIndex = 23;
-            this.label_lineStatus.Text = "Lines Status";
-            // 
             // panel3
             // 
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel3.Controls.Add(this.checkBoxTerminalMode);
             this.panel3.Controls.Add(this.checkBox_pause);
             this.panel3.Controls.Add(this.checkBox_timeStamps);
             this.panel3.Controls.Add(this.comboBox_Format);
             this.panel3.Controls.Add(this.button_clear);
             this.panel3.Location = new System.Drawing.Point(993, 12);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(253, 60);
+            this.panel3.Size = new System.Drawing.Size(253, 76);
             this.panel3.TabIndex = 20;
+            // 
+            // checkBoxTerminalMode
+            // 
+            this.checkBoxTerminalMode.AutoSize = true;
+            this.checkBoxTerminalMode.Location = new System.Drawing.Point(6, 51);
+            this.checkBoxTerminalMode.Name = "checkBoxTerminalMode";
+            this.checkBoxTerminalMode.Size = new System.Drawing.Size(129, 22);
+            this.checkBoxTerminalMode.TabIndex = 24;
+            this.checkBoxTerminalMode.Text = "Terminal Mode";
+            this.checkBoxTerminalMode.UseVisualStyleBackColor = true;
             // 
             // panel4
             // 
@@ -649,9 +676,9 @@ namespace SerialConsole
             this.panel5.Controls.Add(this.button_stopCapture);
             this.panel5.Controls.Add(this.button_capture);
             this.panel5.Controls.Add(this.label_received);
-            this.panel5.Location = new System.Drawing.Point(993, 78);
+            this.panel5.Location = new System.Drawing.Point(993, 93);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(253, 64);
+            this.panel5.Size = new System.Drawing.Size(253, 51);
             this.panel5.TabIndex = 22;
             // 
             // button_stopCapture
@@ -677,7 +704,7 @@ namespace SerialConsole
             // label_received
             // 
             this.label_received.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_received.Location = new System.Drawing.Point(3, 29);
+            this.label_received.Location = new System.Drawing.Point(8, 28);
             this.label_received.Name = "label_received";
             this.label_received.Size = new System.Drawing.Size(240, 22);
             this.label_received.TabIndex = 30;
@@ -699,7 +726,6 @@ namespace SerialConsole
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(1256, 798);
             this.Controls.Add(this.panel5);
-            this.Controls.Add(this.label_lineStatus);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
@@ -712,7 +738,7 @@ namespace SerialConsole
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SerialConsoleForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "COM Port Console - 20250202";
+            this.Text = "COM Port Console - 20250612";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
@@ -787,6 +813,8 @@ namespace SerialConsole
         private System.ComponentModel.IContainer components;
         private System.Windows.Forms.Label label_lineStatus;
         private System.Windows.Forms.CheckBox checkBoxDTRenable;
+        private System.Windows.Forms.CheckBox checkBoxRTSenable;
+        private System.Windows.Forms.CheckBox checkBoxTerminalMode;
     }
 }
 

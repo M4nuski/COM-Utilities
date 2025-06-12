@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +9,7 @@ using System.Windows.Forms;
 using System.IO.Ports;
 using System.Threading;
 using System.IO;
-using System.Net.Http;
-using System.Xml.Linq;
+
 
 namespace SerialConsole // Terminal
 {
@@ -149,6 +147,7 @@ namespace SerialConsole // Terminal
                     case 1:
                         _serialPort.Handshake = Handshake.RequestToSend;
                         _serialPort.DtrEnable = checkBoxDTRenable.Checked;
+                        _serialPort.RtsEnable = checkBoxRTSenable.Checked;
 
                         break;
                     case 2:
@@ -157,6 +156,7 @@ namespace SerialConsole // Terminal
                     case 3:
                         _serialPort.Handshake = Handshake.RequestToSendXOnXOff;
                         _serialPort.DtrEnable = checkBoxDTRenable.Checked;
+                        _serialPort.RtsEnable = checkBoxRTSenable.Checked;
                         break;
                 }
 
@@ -217,8 +217,10 @@ namespace SerialConsole // Terminal
 
             try
             {
+               
                 _serialPort.Open();
-                var cnt = 25;
+                _serialPort.ReceivedBytesThreshold = 1;
+               var cnt = 25;
                 while (!_serialPort.IsOpen && (cnt-- > 0)) Thread.Sleep(200);
                 if (cnt > 0)
                 {
@@ -250,25 +252,43 @@ namespace SerialConsole // Terminal
            // check for reply mode
            // convert to text or raw data
 
+            if (checkBoxTerminalMode.Checked)
+            {
+                var inText = _serialPort.ReadExisting();
+                ExtLog.Add(inText);
+
+                if (capturing && (captureFile != null))
+                {
+                    var sb = Encoding.ASCII.GetBytes(inText);
+                    captureFile.Write(sb, 0, sb.Length);
+                    updateCapturedLabel(captureFile.Length.ToString());
+                }
+
+                return;
+            }
 
 
             if (_formatIndex == 0)  // text only
             {
                 ExtLog.terminateLineIfNecessary();
                 string inText;
-                try
+                while (_serialPort.BytesToRead > 0)
                 {
-                    inText = _serialPort.ReadLine();
-                } catch
-                {
-                    inText = _serialPort.ReadExisting() + " *\r\n";
-                }
-                ExtLog.Add(ts() + "" + inText);
-                if (capturing && (captureFile != null))
-                {
-                    var sb = Encoding.ASCII.GetBytes(inText);
-                    captureFile.Write(sb, 0, sb.Length);
-                    updateCapturedLabel(captureFile.Length.ToString());
+                    try
+                    {
+                        inText = _serialPort.ReadLine();
+                    }
+                    catch
+                    {
+                        inText = _serialPort.ReadExisting() + " *\r\n";
+                    }
+                    ExtLog.Add(ts() + "" + inText);
+                    if (capturing && (captureFile != null))
+                    {
+                        var sb = Encoding.ASCII.GetBytes(inText);
+                        captureFile.Write(sb, 0, sb.Length);
+                        updateCapturedLabel(captureFile.Length.ToString());
+                    }
                 }
                 return;
             }
@@ -354,6 +374,7 @@ namespace SerialConsole // Terminal
                 }
 
                 ExtLog.Add(sb.ToString());
+                //ExtLog.Add(toRead.ToString() + '/' + _serialPort.BytesToRead.ToString());
             }
 
             // numData format 
@@ -414,7 +435,8 @@ namespace SerialConsole // Terminal
             {
                 _serialPort.DiscardOutBuffer();
                 _serialPort.DiscardInBuffer();
-                Invoke(new void_voidDelegate(_serialPort.Close), null);
+               // Invoke(new void_voidDelegate(_serialPort.Close), null);
+                _serialPort.Close();
             }
             try
             {
@@ -538,7 +560,7 @@ namespace SerialConsole // Terminal
         {
             if (!_serialPort.IsOpen) return;
             Invoke(new void_voidDelegate(_serialPort.Close), null);
-            ExtLog.AddLine("Port Closed");
+         //   ExtLog.AddLine("Port Closed");
         }
 
         private void button_sendBIN_Click(object sender, EventArgs e)
@@ -800,24 +822,21 @@ namespace SerialConsole // Terminal
                 label_received.Invoke((void_stringDelegate)updateCapturedLabel, new object[] { s });
             }
             else label_received.Text = s;
+           
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (!_serialPort.IsOpen) return;
-            label_lineStatus.Text = $"CDhold[{_serialPort.CDHolding}] CTShold[{_serialPort.CtsHolding}] DSRhold[{_serialPort.DsrHolding}] DTRenabled[{_serialPort.DtrEnable}]";
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (!_serialPort.IsOpen) return;
-            _serialPort.DtrEnable = !_serialPort.DtrEnable;
+            label_lineStatus.Text = $"CDhold:[{_serialPort.CDHolding}], CTShold:[{_serialPort.CtsHolding}], DSRhold:[{_serialPort.DsrHolding}]";
+            //if (_serialPort.BytesToRead > 0) ExtLog.AddLine(_serialPort.BytesToRead.ToString());
         }
 
         private void checkBoxDTRenable_CheckedChanged(object sender, EventArgs e)
         {
             if (!_serialPort.IsOpen) return;
             _serialPort.DtrEnable = checkBoxDTRenable.Checked;
+            _serialPort.RtsEnable = checkBoxRTSenable.Checked;
         }
     }
 
