@@ -39,7 +39,6 @@ namespace SerialConsole // Terminal
 
         /*
         Add CR+LF
-        Add CR 0D
         Add LF 0A
         No Line Ending  
         */
@@ -55,6 +54,7 @@ namespace SerialConsole // Terminal
             _serialPort.ErrorReceived += onErrorReceived;
 
             ExtLog.bx = textBox_output;
+            ExtLog.tsf = "HH:mm:ss.ff ";
 
             comboBox_Format.SelectedIndex = 0;
             comboBox_LE.SelectedIndex = 0;
@@ -81,7 +81,7 @@ namespace SerialConsole // Terminal
             }
             catch
             {
-                ExtLog.AddLine("Error reading Settings");
+                ExtLog.AddLine("Error reading Settings", true);
             }
 
         }
@@ -101,7 +101,7 @@ namespace SerialConsole // Terminal
 
         private void onErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
-            ExtLog.AddLine("Error: " + e.EventType.ToString());
+            ExtLog.AddLine("Error: " + e.EventType.ToString(), true);
             if (checkBox_sendPattern.Checked) checkBox_sendPattern.Checked = false;
             stopSend = true;
         }
@@ -203,7 +203,7 @@ namespace SerialConsole // Terminal
                     if (timeout < 0) timeout = 1;
                 } catch
                 {
-                    ExtLog.AddLine("Invalid timeout value");
+                    ExtLog.AddLine("Invalid timeout value", true);
                     timeout = 500;
                     timeout_textBox.Text = "500";
                 }
@@ -211,7 +211,7 @@ namespace SerialConsole // Terminal
                 _serialPort.WriteTimeout = timeout;
             } catch (Exception ex)
             {
-                ExtLog.AddLine("Error setting up serial port: " + ex.Message);
+                ExtLog.AddLine("Error setting up serial port: " + ex.Message, true);
                 return;
             }
 
@@ -224,18 +224,18 @@ namespace SerialConsole // Terminal
                 while (!_serialPort.IsOpen && (cnt-- > 0)) Thread.Sleep(200);
                 if (cnt > 0)
                 {
-                    ExtLog.AddLine("Session Started: " + DateTime.Now.ToString("yyyy-MM-dd"));
-                    ExtLog.AddLine(_serialPort.PortName + "@" + _serialPort.BaudRate);
+                    ExtLog.AddLine("Session Started: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), false);
+                    ExtLog.AddLine(_serialPort.PortName + "@" + _serialPort.BaudRate, false);
                 }
                 else
                 {
-                    ExtLog.AddLine("Failed to open port");
+                    ExtLog.AddLine("Failed to open port", true);
                     button_close_Click(sender, e);
                 }
             }
             catch (Exception ex)
             {
-                ExtLog.AddLine("Error opening serial port: " + ex.Message);
+                ExtLog.AddLine("Error opening serial port: " + ex.Message, true);
             }
         }
 
@@ -255,7 +255,7 @@ namespace SerialConsole // Terminal
             if (checkBoxTerminalMode.Checked)
             {
                 var inText = _serialPort.ReadExisting();
-                ExtLog.Add(inText);
+                ExtLog.AddLine(inText, false, false);
 
                 if (capturing && (captureFile != null))
                 {
@@ -270,19 +270,18 @@ namespace SerialConsole // Terminal
 
             if (_formatIndex == 0)  // text only
             {
-                ExtLog.terminateLineIfNecessary();
-                string inText;
+                string inText = "";
                 while (_serialPort.BytesToRead > 0)
                 {
                     try
                     {
-                        inText = _serialPort.ReadLine();
+                        inText += _serialPort.ReadLine();
                     }
                     catch
                     {
-                        inText = _serialPort.ReadExisting() + " *\r\n";
+                        inText += _serialPort.ReadExisting();// + " *\r\n";
                     }
-                    ExtLog.Add(ts() + "" + inText);
+                    
                     if (capturing && (captureFile != null))
                     {
                         var sb = Encoding.ASCII.GetBytes(inText);
@@ -290,15 +289,15 @@ namespace SerialConsole // Terminal
                         updateCapturedLabel(captureFile.Length.ToString());
                     }
                 }
+                ExtLog.AddLine(inText, checkBox_timeStamps.Checked);
                 return;
             }
             else
             {
-                sb.Clear();
-                sb.Append(ts());
                 var toRead = _serialPort.BytesToRead;
                 while (toRead > 0)
                 {
+                    sb.Clear();
                     if (toRead > 8) toRead = 8;
                     toRead = _serialPort.Read(dataBuffer, 0, toRead);
                     if (capturing && (captureFile != null))
@@ -368,12 +367,12 @@ namespace SerialConsole // Terminal
                         sb.Append(txtStr);
                     }
 
-                    sb.AppendLine();
+                   // sb.AppendLine();
+                    ExtLog.AddLine(sb.ToString(), checkBox_timeStamps.Checked);
 
                     toRead = _serialPort.BytesToRead;
                 }
 
-                ExtLog.Add(sb.ToString());
                 //ExtLog.Add(toRead.ToString() + '/' + _serialPort.BytesToRead.ToString());
             }
 
@@ -417,10 +416,10 @@ namespace SerialConsole // Terminal
             return "" + Convert.ToChar(b);
         }
 
-        private string ts()
-        {
-            return checkBox_timeStamps.Checked ? DateTime.Now.ToString("HH:mm:ss.ff ") : "";
-        }
+      //  public string ts()
+      //  {
+      //      return checkBox_timeStamps.Checked ? DateTime.Now.ToString("HH:mm:ss.ff ") : "";
+      //  }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -533,13 +532,12 @@ namespace SerialConsole // Terminal
             {
                 var c = textBox_input.Text.ToUpperInvariant().Where(v => hexChars.Contains(v));
                 string s = string.Concat(c);
-                if ((s.Length % 2) != 0) s += "0";
+                if ((s.Length % 2) != 0) s = "0" + s;
                 for (var i = 0; i < s.Length; i += 2) dataBuffer[i / 2] = hexToByte(s.Substring(i, 2));
 
                 _serialPort.Write(dataBuffer, 0, s.Length / 2);
             }
-            ExtLog.terminateLineIfNecessary();
-            ExtLog.AddLine(ts() + "> " + textBox_input.Text);
+            ExtLog.AddLine("> " + textBox_input.Text, checkBox_timeStamps.Checked);
             if ((textBox_input.Text.Trim() != "") && (textBox_input.Text != safeLastHistory())) history.Add(textBox_input.Text);
             historyIndex = history.Count;
             textBox_input.Clear();
@@ -560,7 +558,8 @@ namespace SerialConsole // Terminal
         {
             if (!_serialPort.IsOpen) return;
             Invoke(new void_voidDelegate(_serialPort.Close), null);
-         //   ExtLog.AddLine("Port Closed");
+            
+            ExtLog.AddLine("Port Closed", checkBox_timeStamps.Checked);
         }
 
         private void button_sendBIN_Click(object sender, EventArgs e)
@@ -573,14 +572,14 @@ namespace SerialConsole // Terminal
             try
             {
                 var f = File.OpenRead(openFileDialog1.FileName);
-                ExtLog.AddLine("Reading file " + openFileDialog1.FileName);
+                ExtLog.AddLine("Reading file " + openFileDialog1.FileName, false);
                 stopSend = false;
                 lastFileName = openFileDialog1.FileName;
                 sendBIN(f);
                 f.Close();
             } catch (Exception ex)
             {
-                ExtLog.AddLine(ex.Message);
+                ExtLog.AddLine(ex.Message, true);
                 return;
             }
         }
@@ -595,7 +594,7 @@ namespace SerialConsole // Terminal
             }
             catch
             {
-                ExtLog.AddLine("Invalid chunk size value");
+                ExtLog.AddLine("Invalid chunk size value", true);
                 chunkSize = 256;
                 SendBinChunk_textBox.Text = "256";
             }
@@ -614,7 +613,7 @@ namespace SerialConsole // Terminal
             }
             catch
             {
-                ExtLog.AddLine("Invalid chunk delay value");
+                ExtLog.AddLine("Invalid chunk delay value", true);
                 chunkDelay = 0;
                 SendBinPause_textBox.Text = "0";
             }
@@ -632,18 +631,18 @@ namespace SerialConsole // Terminal
                     var hData = textBoxToByteList(textBox_HDR).ToArray();
                     _serialPort.Write(hData, 0, hData.Length);
                     totalSent += hData.Length;
-                    ExtLog.AddLine(ts() + "-> Header " + textBox_HDR.Text);
+                    ExtLog.AddLine("-> Header " + textBox_HDR.Text, checkBox_timeStamps.Checked);
                 }
                 catch (Exception ex)
                 {
-                    ExtLog.AddLine(ts() + " " + ex.Message);
+                    ExtLog.AddLine(ex.Message, true);
                 }
             }
 
             var data = new byte[chunkSize];
             var dataLength = f.Read(data, 0, chunkSize);
 
-            if ((1000 * chunkSize / (_serialPort.BaudRate / 10)) > _serialPort.WriteTimeout) ExtLog.AddLine("**** Chunk size might be too high for baudrate/timeout ****");
+            if ((1000 * chunkSize / (_serialPort.BaudRate / 10)) > _serialPort.WriteTimeout) ExtLog.AddLine("**** Chunk size might be too high for baudrate/timeout ****", true);
 
 
             while ((dataLength > 0) && !stopSend)
@@ -652,11 +651,11 @@ namespace SerialConsole // Terminal
                 {
                     _serialPort.Write(data, 0, dataLength);
                     totalSent += dataLength;
-                    ExtLog.AddLine(ts() + "-> " + dataLength.ToString("D"));                    
+                    ExtLog.AddLine("-> " + dataLength.ToString("D"), checkBox_timeStamps.Checked);                    
                 }
                 catch (Exception ex)
                 {
-                    ExtLog.AddLine(ts() + " " + ex.Message);
+                    ExtLog.AddLine(ex.Message, true);
                 }
                 label_sent.Text = $"{totalSent}/{f.Length}";
                 if (chunkDelay != 0) Thread.Sleep(chunkDelay);
@@ -673,15 +672,15 @@ namespace SerialConsole // Terminal
                     var fData = textBoxToByteList(textBox_FTR).ToArray();
                     _serialPort.Write(fData, 0, fData.Length);
                     totalSent += fData.Length;
-                    ExtLog.AddLine(ts() + "-> Footer " + textBox_FTR.Text);
+                    ExtLog.AddLine("-> Footer " + textBox_FTR.Text, checkBox_timeStamps.Checked);
                 }
                 catch (Exception ex)
                 {
-                    ExtLog.AddLine(ts() + " " + ex.Message);
+                    ExtLog.AddLine(ex.Message, true);
                 }
             }
 
-            ExtLog.AddLine($"Sent {totalSent}/{f.Length} bytes");
+            ExtLog.AddLine($"Sent {totalSent}/{f.Length} bytes", checkBox_timeStamps.Checked);
             
         }
 
@@ -694,7 +693,7 @@ namespace SerialConsole // Terminal
         {
             var c = tb.Text.ToUpperInvariant().Where(v => hexChars.Contains(v));
             string s = string.Concat(c);
-            if ((s.Length % 2) != 0) s += "0";
+            if ((s.Length % 2) != 0) s = "0" + s;
             var result = new List<byte>();
             for (var i = 0; i < s.Length; i += 2) result.Add(hexToByte(s.Substring(i, 2)));
             return result;
@@ -728,24 +727,24 @@ namespace SerialConsole // Terminal
 
                 if (comboBox_pattern.SelectedIndex == 0)
                 {
-                    try { 
+                    try {
+                        ExtLog.AddLine("-> " + textBox_sendPattern.Text, checkBox_timeStamps.Checked);
                         _serialPort.Write(sendPattern.ToArray(), 0, sendPattern.Count);
-                        ExtLog.AddLine(ts() + " " + textBox_sendPattern.Text);
                     } catch (Exception ex)
                     {
-                        ExtLog.AddLine(ts() + " " + ex.Message);
+                        ExtLog.AddLine(ex.Message, true);
                     }
                 checkBox_sendPattern.Checked = false;
                 } else if (comboBox_pattern.SelectedIndex == 1)
                 {
                     while (checkBox_sendPattern.Checked && _serialPort.IsOpen)
                     {
-                        try { 
+                        try {
+                            ExtLog.AddLine("-> " + textBox_sendPattern.Text, checkBox_timeStamps.Checked);
                             _serialPort.Write(sendPattern.ToArray(), 0, sendPattern.Count);
-                            ExtLog.AddLine(ts() + " " + textBox_sendPattern.Text);
                         } catch (Exception ex)
                         {
-                            ExtLog.AddLine(ts() + " " + ex.Message);
+                            ExtLog.AddLine(ex.Message, true);
                             checkBox_sendPattern.Checked = false;
                         }
                     if (patternDelay != 0) Thread.Sleep(patternDelay);
@@ -767,14 +766,14 @@ namespace SerialConsole // Terminal
             try
             {
                 var f = File.OpenRead(lastFileName);
-                ExtLog.AddLine("Reading file " + lastFileName);
+                ExtLog.AddLine("Reading file " + lastFileName, false);
                 stopSend = false;
                 sendBIN(f);
                 f.Close();
             }
             catch (Exception ex)
             {
-                ExtLog.AddLine(ex.Message);
+                ExtLog.AddLine(ex.Message, true);
                 return;
             }
         }
@@ -791,10 +790,10 @@ namespace SerialConsole // Terminal
                 }
                 captureFile = File.OpenWrite(saveFileDialog1.FileName);
                 capturing = true;
-                ExtLog.AddLine("Capture Started in " + saveFileDialog1.FileName);
+                ExtLog.AddLine("Capture Started in " + saveFileDialog1.FileName, checkBox_timeStamps.Checked);
                 label_received.Text = "0";
             } catch (Exception ex) {
-                ExtLog.AddLine(ex.Message);
+                ExtLog.AddLine(ex.Message, true);
                 capturing = false;
                 if (captureFile != null) {
                     captureFile.Close();
@@ -807,12 +806,11 @@ namespace SerialConsole // Terminal
         private void button_stopCapture_Click(object sender, EventArgs e)
         {
             capturing = false;
-            if (captureFile != null)
-            {
-                captureFile.Close();
-                captureFile = null;
-                ExtLog.AddLine("Capture Stopped.");
-            }
+            if (captureFile == null) return;
+            
+            captureFile.Close();
+            captureFile = null;
+            ExtLog.AddLine("Capture Stopped.", checkBox_timeStamps.Checked);
         }
 
         private void updateCapturedLabel(string s)
@@ -841,94 +839,104 @@ namespace SerialConsole // Terminal
     }
 
     delegate void void_stringDelegate(string text);
+    delegate void void_stringboolboolDelegate(string text, bool tmstmp, bool term);
     delegate void void_voidDelegate();
+    public delegate string string_voidDelegage();
 
     public static class ExtLog
     {
 
         public static TextBox bx;
-        public static void AddLine(string s)
-        {
-            if (bx != null)
-            {
-                if (bx.InvokeRequired)
-                {
-                    bx.Invoke((void_stringDelegate)AddLine, new object[] { s });
-                }
-                else bx.AppendText(s + "\r\n");
-            }
-        }
+        public static string tsf = "HH:mm:ss.ff ";
 
+        public static void AddLine(string s, bool timestamp, bool autoTerminate = true)
+        {
+            if (bx == null) return;
+            if (s == "") return;
+
+            if (bx.InvokeRequired)
+            {
+                bx.Invoke((void_stringboolboolDelegate)AddLine, new object[] { s, timestamp, autoTerminate });
+            }
+            else
+            {
+                if (autoTerminate && (bx.Text.Length != 0) && !bx.Text.EndsWith("\r\n")) bx.AppendText("\r\n");
+                if (timestamp) bx.AppendText(DateTime.Now.ToString(tsf));
+
+                bx.AppendText(s.EndsWith("\r\n") ? s : s + "\r\n");
+            }
+
+        }
+        /*
         public static void terminateLineIfNecessary()
         {
-            if (bx != null)
-            {
-                if (bx.InvokeRequired)
-                {
-                    bx.Invoke((void_voidDelegate)terminateLineIfNecessary);
-                }
-                else
-                {
-                    if (bx.Text.Length == 0) return; 
-                    if (!bx.Text.EndsWith("\r\n")) bx.AppendText("\r\n");
-                }
-            }
-        }
+            if (bx == null) return;
 
+            if (bx.InvokeRequired)
+            {
+                bx.Invoke((void_voidDelegate)terminateLineIfNecessary);
+            }
+            else
+            {
+                if (bx.Text.Length == 0) return; 
+                if (!bx.Text.EndsWith("\r\n")) bx.AppendText("\r\n");
+            }
+
+        }*/
+        /*
         public static void UpdateLine(string s)
         {
-            if (bx != null)
-            {
-                if (bx.InvokeRequired)
-                {
-                    bx.Invoke((void_stringDelegate)UpdateLine, new object[] { s });
-                }
-                else
-                {
-                    bx.Lines[bx.Lines.Count() - 1] = s;
-                }
-            }
-        }
+            if (bx == null) return;
 
+            if (bx.InvokeRequired)
+            {
+                bx.Invoke((void_stringDelegate)UpdateLine, new object[] { s });
+            }
+            else
+            {
+                bx.Lines[bx.Lines.Count() - 1] = s;
+            }
+
+        }*/
+        /*
         public static void NewLine()
         {
-            if (bx != null)
+            if (bx == null) return;
+
+            if (bx.InvokeRequired)
             {
-                if (bx.InvokeRequired)
-                {
-                    bx.Invoke((void_voidDelegate)NewLine);
-                }
-                else
-                {
-                    bx.Lines[bx.Lines.Count() - 1] += "\r\n";
-                }
+                bx.Invoke((void_voidDelegate)NewLine);
             }
+            else
+            {
+                bx.Lines[bx.Lines.Count() - 1] += "\r\n";
+            }
+
         }
-
-
+        */
+        /*
         public static void Add(string s)
         {
-            if (bx != null)
+            if (bx == null) return;
+            if (bx.InvokeRequired)
             {
-                if (bx.InvokeRequired)
-                {
-                    bx.Invoke((void_stringDelegate)Add, new object[] { s });
-                }
-                else bx.AppendText(s);
+                bx.Invoke((void_stringDelegate)Add, new object[] { s });
             }
-        }
+            else bx.AppendText(s);
 
+        }*/
+        /*
         public static void Clear()
         {
-            if (bx != null)
+            if (bx == null) return;
+
+            if (bx.InvokeRequired)
             {
-                if (bx.InvokeRequired)
-                {
-                    bx.Invoke((void_voidDelegate)Clear);
-                }
-                else bx.Clear();
+                bx.Invoke((void_voidDelegate)Clear);
             }
+            else bx.Clear();
         }
+        */
 
     }
 }
