@@ -268,6 +268,12 @@ namespace Benchmark
                 timer1.Enabled = false;
                 ExtLog.AddLine("Time duration reached");
             }
+
+            if (state == stateType.Loopback)
+            {
+                _serialPort.Write(dataOutBuffer, 0, packetLength);
+                totalsent = packetLength;
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -304,7 +310,7 @@ namespace Benchmark
             timer1.Enabled = true;
             _serialPort.DiscardInBuffer();
 
-            _serialPort.Write(dataOutBuffer, 0, 1);
+            _serialPort.Write(dataOutBuffer, 0, packetLength);
             totalsent = packetLength;
             state = stateType.Loopback;
         }

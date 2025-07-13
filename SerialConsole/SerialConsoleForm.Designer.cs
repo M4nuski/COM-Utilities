@@ -599,7 +599,7 @@ namespace SerialConsole
             this.panel4.Controls.Add(this.checkBox_sendPattern);
             this.panel4.Location = new System.Drawing.Point(672, 12);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(206, 117);
+            this.panel4.Size = new System.Drawing.Size(206, 132);
             this.panel4.TabIndex = 21;
             // 
             // label6
