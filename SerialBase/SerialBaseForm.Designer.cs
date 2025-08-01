@@ -62,6 +62,7 @@ namespace SerialBase
             this.timeout_textBox = new System.Windows.Forms.TextBox();
             this.label_to = new System.Windows.Forms.Label();
             this.panel_LOGcontrols = new System.Windows.Forms.Panel();
+            this.checkBox_autoLineEnd = new System.Windows.Forms.CheckBox();
             this.checkBox_bin = new System.Windows.Forms.CheckBox();
             this.checkBox_hex = new System.Windows.Forms.CheckBox();
             this.checkBox_text = new System.Windows.Forms.CheckBox();
@@ -442,6 +443,7 @@ namespace SerialBase
             // panel_LOGcontrols
             // 
             this.panel_LOGcontrols.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel_LOGcontrols.Controls.Add(this.checkBox_autoLineEnd);
             this.panel_LOGcontrols.Controls.Add(this.checkBox_bin);
             this.panel_LOGcontrols.Controls.Add(this.checkBox_hex);
             this.panel_LOGcontrols.Controls.Add(this.checkBox_text);
@@ -453,6 +455,16 @@ namespace SerialBase
             this.panel_LOGcontrols.Name = "panel_LOGcontrols";
             this.panel_LOGcontrols.Size = new System.Drawing.Size(182, 132);
             this.panel_LOGcontrols.TabIndex = 20;
+            // 
+            // checkBox_autoLineEnd
+            // 
+            this.checkBox_autoLineEnd.AutoSize = true;
+            this.checkBox_autoLineEnd.Location = new System.Drawing.Point(3, 83);
+            this.checkBox_autoLineEnd.Name = "checkBox_autoLineEnd";
+            this.checkBox_autoLineEnd.Size = new System.Drawing.Size(97, 19);
+            this.checkBox_autoLineEnd.TabIndex = 28;
+            this.checkBox_autoLineEnd.Text = "Fix LineEnds";
+            this.checkBox_autoLineEnd.UseVisualStyleBackColor = true;
             // 
             // checkBox_bin
             // 
@@ -521,7 +533,7 @@ namespace SerialBase
             this.MinimumSize = new System.Drawing.Size(620, 240);
             this.Name = "SerialBaseForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "COM Port Base - 20250712";
+            this.Text = "COM Port Base - 20250801";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel_COMcontrols.ResumeLayout(false);
@@ -573,6 +585,7 @@ namespace SerialBase
         private System.Windows.Forms.CheckBox checkBox_BH;
         private System.Windows.Forms.Label label_ring;
         private System.Windows.Forms.Timer timer_ring;
+        private System.Windows.Forms.CheckBox checkBox_autoLineEnd;
     }
 }
 

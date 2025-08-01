@@ -29,7 +29,6 @@ namespace SerialConsole
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.button_list = new System.Windows.Forms.Button();
             this.button_open = new System.Windows.Forms.Button();
             this.textBox_output = new System.Windows.Forms.TextBox();
@@ -72,6 +71,7 @@ namespace SerialConsole
             this.timeout_textBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.checkBox_autoLineEnd = new System.Windows.Forms.CheckBox();
             this.checkBoxTerminalMode = new System.Windows.Forms.CheckBox();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.Label();
@@ -86,7 +86,7 @@ namespace SerialConsole
             this.button_capture = new System.Windows.Forms.Button();
             this.label_received = new System.Windows.Forms.Label();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.timer1 = new System.Windows.Forms.Timer();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -567,6 +567,7 @@ namespace SerialConsole
             // 
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel3.Controls.Add(this.checkBox_autoLineEnd);
             this.panel3.Controls.Add(this.checkBoxTerminalMode);
             this.panel3.Controls.Add(this.checkBox_pause);
             this.panel3.Controls.Add(this.checkBox_timeStamps);
@@ -576,6 +577,18 @@ namespace SerialConsole
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(253, 76);
             this.panel3.TabIndex = 20;
+            // 
+            // checkBox_autoLineEnd
+            // 
+            this.checkBox_autoLineEnd.AutoSize = true;
+            this.checkBox_autoLineEnd.Checked = true;
+            this.checkBox_autoLineEnd.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_autoLineEnd.Location = new System.Drawing.Point(158, 51);
+            this.checkBox_autoLineEnd.Name = "checkBox_autoLineEnd";
+            this.checkBox_autoLineEnd.Size = new System.Drawing.Size(97, 19);
+            this.checkBox_autoLineEnd.TabIndex = 25;
+            this.checkBox_autoLineEnd.Text = "Fix LineEnds";
+            this.checkBox_autoLineEnd.UseVisualStyleBackColor = true;
             // 
             // checkBoxTerminalMode
             // 
@@ -739,7 +752,7 @@ namespace SerialConsole
             this.MinimumSize = new System.Drawing.Size(1163, 240);
             this.Name = "SerialConsoleForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "COM Port Console - 20250711";
+            this.Text = "Serial Console - 20250801";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
@@ -816,6 +829,7 @@ namespace SerialConsole
         private System.Windows.Forms.CheckBox checkBoxDTRenable;
         private System.Windows.Forms.CheckBox checkBoxRTSenable;
         private System.Windows.Forms.CheckBox checkBoxTerminalMode;
+        private System.Windows.Forms.CheckBox checkBox_autoLineEnd;
     }
 }
 

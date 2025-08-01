@@ -20,7 +20,7 @@ namespace SerialBase
         int historyIndex = 0;
 
         byte[] dataBuffer = new byte[1024];
-
+        byte[] charBuffer = new byte[1];
         StringBuilder sb = new StringBuilder();
 
         /*
@@ -262,6 +262,7 @@ namespace SerialBase
             if (checkBox_terminalMode.Checked)
             {
                 var inText = _serialPort.ReadExisting();
+                inText = fixLineEndings(inText);
                 ExtLog.AddLine(inText, false, false);
                 return;
             }
@@ -281,6 +282,7 @@ namespace SerialBase
                         inText += _serialPort.ReadExisting();
                     }
                 }
+                inText = fixLineEndings(inText);
                 ExtLog.AddLine(inText, checkBox_timeStamps.Checked);
                 return;
             }
@@ -353,6 +355,16 @@ namespace SerialBase
             }
         }
 
+        private string fixLineEndings(string inText)
+        {
+            if (!checkBox_autoLineEnd.Checked) return inText;
+
+            inText = inText.Replace("\r\n", "\n");
+            inText = inText.Replace("\r", "\n");
+            inText = inText.Replace("\n", "\r\n");
+            return inText;
+        }
+
         private static string byteToHex(byte b)
         {
             return Convert.ToString(b, 16).PadLeft(2, '0').ToUpperInvariant();
@@ -368,7 +380,9 @@ namespace SerialBase
         private string safeCharConvert(byte b)
         {
             if ((b < 32) || (b >= 127)) return ".";
-            return "" + Convert.ToChar(b);
+            //return "" + Convert.ToChar(b);
+            charBuffer[0] = b;
+            return Encoding.ASCII.GetString(charBuffer);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

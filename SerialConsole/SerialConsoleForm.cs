@@ -10,7 +10,6 @@ using System.IO.Ports;
 using System.Threading;
 using System.IO;
 
-
 namespace SerialConsole // Terminal
 {
     public partial class SerialConsoleForm : Form
@@ -34,6 +33,7 @@ namespace SerialConsole // Terminal
         FileStream captureFile;
 
         byte[] dataBuffer = new byte[1024];
+        byte[] charBuffer = new byte[1];
 
         StringBuilder sb = new StringBuilder();
 
@@ -255,6 +255,7 @@ namespace SerialConsole // Terminal
             if (checkBoxTerminalMode.Checked)
             {
                 var inText = _serialPort.ReadExisting();
+                inText = fixLineEndings(inText);
                 ExtLog.AddLine(inText, false, false);
 
                 if (capturing && (captureFile != null))
@@ -279,7 +280,7 @@ namespace SerialConsole // Terminal
                     }
                     catch
                     {
-                        inText += _serialPort.ReadExisting();// + " *\r\n";
+                        inText += _serialPort.ReadExisting();
                     }
                     
                     if (capturing && (captureFile != null))
@@ -289,6 +290,7 @@ namespace SerialConsole // Terminal
                         updateCapturedLabel(captureFile.Length.ToString());
                     }
                 }
+                inText = fixLineEndings(inText);
                 ExtLog.AddLine(inText, checkBox_timeStamps.Checked);
                 return;
             }
@@ -398,6 +400,16 @@ namespace SerialConsole // Terminal
             */
         }
 
+        private string fixLineEndings(string inText)
+        {
+            if (!checkBox_autoLineEnd.Checked) return inText;
+
+            inText = inText.Replace("\r\n", "\n");
+            inText = inText.Replace("\r", "\n");
+            inText = inText.Replace("\n", "\r\n");
+            return inText;
+        }
+
         private static string byteToHex(byte b)
         {
             return Convert.ToString(b, 16).PadLeft(2, '0').ToUpperInvariant();
@@ -413,7 +425,9 @@ namespace SerialConsole // Terminal
         private string safeCharConvert(byte b)
         {
             if ((b < 32) || (b >= 127)) return ".";
-            return "" + Convert.ToChar(b);
+            //return "" + Convert.ToChar(b);
+            charBuffer[0] = b;
+            return Encoding.ASCII.GetString(charBuffer);
         }
 
       //  public string ts()
