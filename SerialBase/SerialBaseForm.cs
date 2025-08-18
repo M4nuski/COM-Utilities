@@ -28,7 +28,7 @@ namespace SerialBase
         Add LF 0A
         No Line Ending  
         */
-        readonly string[] LE = new string[3] { "\r\n", "\n", "" };
+        readonly string[] LE = new string[4] { "\r\n", "\n", "", "\r" };
         readonly List<char> hexChars = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
         public SerialBaseForm()
@@ -55,6 +55,9 @@ namespace SerialBase
                 checkBox_bin.Checked = Properties.Settings.Default.FormatBin;
 
                 comboBox_lineEnding.SelectedIndex = Properties.Settings.Default.lastLE;
+                checkBox_autoLineEnd.Checked = Properties.Settings.Default.fixLE;
+                checkBox_timeStamps.Checked = Properties.Settings.Default.timeStamps;
+                checkBox_terminalMode.Checked = Properties.Settings.Default.terminalMode;
 
                 timeout_textBox.Text = Properties.Settings.Default.timeout.ToString("D");
                 comboBox_bitLength.SelectedIndex = Properties.Settings.Default.bitLength;
@@ -399,11 +402,14 @@ namespace SerialBase
                 Properties.Settings.Default.lastPortName = comboBox_portName.Text;
                 Properties.Settings.Default.lastPortSpeed = comboBox_portSpeed.Text;
 
-                Properties.Settings.Default.lastLE = comboBox_lineEnding.SelectedIndex;
-
                 Properties.Settings.Default.FormatText = checkBox_text.Checked;
                 Properties.Settings.Default.FormatHex = checkBox_hex.Checked;
                 Properties.Settings.Default.FormatBin = checkBox_bin.Checked;
+
+                Properties.Settings.Default.lastLE = comboBox_lineEnding.SelectedIndex;
+                Properties.Settings.Default.fixLE = checkBox_autoLineEnd.Checked;
+                Properties.Settings.Default.timeStamps = checkBox_timeStamps.Checked;
+                Properties.Settings.Default.terminalMode = checkBox_terminalMode.Checked;
 
                 Properties.Settings.Default.timeout = int.Parse(timeout_textBox.Text);
                 Properties.Settings.Default.bitLength = comboBox_bitLength.SelectedIndex;

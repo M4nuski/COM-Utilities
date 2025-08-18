@@ -42,7 +42,7 @@ namespace SerialConsole // Terminal
         Add LF 0A
         No Line Ending  
         */
-        readonly string[] LE = new string[3] { "\r\n", "\n", "" };
+        readonly string[] LE = new string[4] { "\r\n", "\n", "", "\r" };
         readonly List<char> hexChars = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
         public SerialConsoleForm()
@@ -52,20 +52,28 @@ namespace SerialConsole // Terminal
             _serialPort = new SerialPort();
             _serialPort.DataReceived += onDataReceived;
             _serialPort.ErrorReceived += onErrorReceived;
+            _serialPort.PinChanged += onPinChanged;
 
             ExtLog.bx = textBox_output;
             ExtLog.tsf = "HH:mm:ss.ff ";
 
-            comboBox_Format.SelectedIndex = 0;
+           // comboBox_Format.SelectedIndex = 0;
             comboBox_LE.SelectedIndex = 0;
 
             try
             {
                 comboBox_portName.Text = Properties.Settings.Default.lastPortName;
                 comboBox_portSpeed.Text = Properties.Settings.Default.lastPortSpeed;
-                comboBox_Format.SelectedIndex = Properties.Settings.Default.lastFormat;
+
+                checkBox_text.Checked = Properties.Settings.Default.FormatText;
+                checkBox_hex.Checked = Properties.Settings.Default.FormatHex;
+                checkBox_bin.Checked = Properties.Settings.Default.FormatBin;
+
                 comboBox_LE.SelectedIndex = Properties.Settings.Default.lastLE;
-              
+                checkBox_autoLineEnd.Checked = Properties.Settings.Default.fixLE;
+                checkBox_timeStamps.Checked = Properties.Settings.Default.timeStamps;
+                checkBox_terminalMode.Checked = Properties.Settings.Default.terminalMode;
+
                 timeout_textBox.Text = Properties.Settings.Default.timeout.ToString("D");
                 comboBox_bitLength.SelectedIndex = Properties.Settings.Default.bitLength;
                 comboBox_handshake.SelectedIndex = Properties.Settings.Default.handshake;
@@ -104,6 +112,31 @@ namespace SerialConsole // Terminal
             ExtLog.AddLine("Error: " + e.EventType.ToString(), true);
             if (checkBox_sendPattern.Checked) checkBox_sendPattern.Checked = false;
             stopSend = true;
+        }
+
+        private void onPinChanged(object sender, SerialPinChangedEventArgs e)
+        {
+            if (e.EventType == SerialPinChange.Ring)
+            {
+                ExtLog.AddLine("*RING*", checkBox_timeStamps.Checked);
+
+                this.Invoke((void_voidDelegate)showRing);
+            }
+        }
+
+        private void showRing()
+        {
+            label_ring.Visible = true;
+            if (timer_ring.Enabled)
+            {
+                timer_ring.Stop();
+                timer_ring.Start();
+            }
+            else
+            {
+                timer_ring.Start();
+                System.Media.SystemSounds.Beep.Play();
+            }
         }
 
         private void button_list_Click(object sender, EventArgs e)
@@ -146,8 +179,8 @@ namespace SerialConsole // Terminal
                         break;
                     case 1:
                         _serialPort.Handshake = Handshake.RequestToSend;
-                        _serialPort.DtrEnable = checkBoxDTRenable.Checked;
-                        _serialPort.RtsEnable = checkBoxRTSenable.Checked;
+                        _serialPort.DtrEnable = checkBox_DTRenable.Checked;
+                        _serialPort.RtsEnable = checkBox_RTSenable.Checked;
 
                         break;
                     case 2:
@@ -155,8 +188,8 @@ namespace SerialConsole // Terminal
                         break;
                     case 3:
                         _serialPort.Handshake = Handshake.RequestToSendXOnXOff;
-                        _serialPort.DtrEnable = checkBoxDTRenable.Checked;
-                        _serialPort.RtsEnable = checkBoxRTSenable.Checked;
+                        _serialPort.DtrEnable = checkBox_DTRenable.Checked;
+                        _serialPort.RtsEnable = checkBox_RTSenable.Checked;
                         break;
                 }
 
@@ -247,12 +280,7 @@ namespace SerialConsole // Terminal
                 return;
             }
 
-           // var d = _serialPort.
-           // load serial data
-           // check for reply mode
-           // convert to text or raw data
-
-            if (checkBoxTerminalMode.Checked)
+            if (checkBox_terminalMode.Checked)
             {
                 var inText = _serialPort.ReadExisting();
                 inText = fixLineEndings(inText);
@@ -268,8 +296,8 @@ namespace SerialConsole // Terminal
                 return;
             }
 
-
-            if (_formatIndex == 0)  // text only
+            // Text Only
+            if (checkBox_text.Checked && !checkBox_hex.Checked && !checkBox_bin.Checked)
             {
                 string inText = "";
                 while (_serialPort.BytesToRead > 0)
@@ -282,122 +310,91 @@ namespace SerialConsole // Terminal
                     {
                         inText += _serialPort.ReadExisting();
                     }
-                    
-                    if (capturing && (captureFile != null))
-                    {
-                        var sb = Encoding.ASCII.GetBytes(inText);
-                        captureFile.Write(sb, 0, sb.Length);
-                        updateCapturedLabel(captureFile.Length.ToString());
-                    }
                 }
+
+                if (capturing && (captureFile != null))
+                {
+                    var sb = Encoding.ASCII.GetBytes(inText);
+                    captureFile.Write(sb, 0, sb.Length);
+                    updateCapturedLabel(captureFile.Length.ToString());
+                }
+
                 inText = fixLineEndings(inText);
                 ExtLog.AddLine(inText, checkBox_timeStamps.Checked);
                 return;
             }
-            else
+
+            var toRead = _serialPort.BytesToRead;
+            while (toRead > 0)
             {
-                var toRead = _serialPort.BytesToRead;
-                while (toRead > 0)
+                sb.Clear();
+                if (toRead > 8) toRead = 8;
+                toRead = _serialPort.Read(dataBuffer, 0, toRead);
+
+                if (capturing && (captureFile != null))
                 {
-                    sb.Clear();
-                    if (toRead > 8) toRead = 8;
-                    toRead = _serialPort.Read(dataBuffer, 0, toRead);
-                    if (capturing && (captureFile != null))
-                    {
-                        captureFile.Write(dataBuffer, 0, toRead);
-                        updateCapturedLabel(captureFile.Length.ToString());
-                    }
-
-                    var binStr = "";
-                    var hexStr = "";
-                    var txtStr = "";
-                    for (var i = 0; i < toRead; ++i)
-                    {
-                        binStr += byteToBin(dataBuffer[i]);
-                        hexStr += byteToHex(dataBuffer[i]);
-                        txtStr += safeCharConvert(dataBuffer[i]);
-                        if (i != 3)
-                        {
-                            binStr += " ";
-                            hexStr += " ";
-                        }
-                        else
-                        {
-                            binStr += "  ";
-                            hexStr += "  ";
-                            txtStr += " ";
-                        }
-                    }
-
-                    for (var i = toRead; i < 8; ++i)
-                    {
-                        binStr += "________";
-                        hexStr += "__";
-                        txtStr += " ";
-                        if (i != 3)
-                        {
-                            binStr += " ";
-                            hexStr += " ";
-                        }
-                        else
-                        {
-                            binStr += "  ";
-                            hexStr += "  ";
-                            txtStr += " ";
-                        }
-                    }
-
-                    /*  comboBox_Format
-                       0 Text Only
-                       1 Hex + Text
-                       2 Binary + Hex
-                       3 Binary + Text
-                       4 Binary + Hex + Text
-                    */
-                    if (_formatIndex >= 2)
-                    {
-                        sb.Append(binStr + " ");
-                    }
-
-                    if (_formatIndex != 3)
-                    {
-                        sb.Append(hexStr + " ");
-                    }
-
-                    if (_formatIndex != 2)
-                    {
-                        sb.Append(txtStr);
-                    }
-
-                   // sb.AppendLine();
-                    ExtLog.AddLine(sb.ToString(), checkBox_timeStamps.Checked);
-
-                    toRead = _serialPort.BytesToRead;
+                    captureFile.Write(dataBuffer, 0, toRead);
+                    updateCapturedLabel(captureFile.Length.ToString());
                 }
 
+                var binStr = "";
+                var hexStr = "";
+                var txtStr = "";
+                for (var i = 0; i < toRead; ++i)
+                {
+                    binStr += byteToBin(dataBuffer[i]);
+                    hexStr += byteToHex(dataBuffer[i]);
+                    txtStr += safeCharConvert(dataBuffer[i]);
+                    if (i != 3)
+                    {
+                        binStr += " ";
+                        hexStr += " ";
+                    }
+                    else
+                    {
+                        binStr += "  ";
+                        hexStr += "  ";
+                        txtStr += " ";
+                    }
+                }
+
+                for (var i = toRead; i < 8; ++i)
+                {
+                    binStr += "________";
+                    hexStr += "__";
+                    txtStr += " ";
+                    if (i != 3)
+                    {
+                        binStr += " ";
+                        hexStr += " ";
+                    }
+                    else
+                    {
+                        binStr += "  ";
+                        hexStr += "  ";
+                        txtStr += " ";
+                    }
+                }
+
+                if (checkBox_bin.Checked)
+                {
+                    sb.Append(binStr + " ");
+                }
+
+                if (checkBox_hex.Checked)
+                {
+                    sb.Append(hexStr + " ");
+                }
+
+                if (checkBox_text.Checked)
+                {
+                    sb.Append(txtStr);
+                }
+
+                ExtLog.AddLine(sb.ToString(), checkBox_timeStamps.Checked);
+                toRead = _serialPort.BytesToRead;
                 //ExtLog.Add(toRead.ToString() + '/' + _serialPort.BytesToRead.ToString());
             }
-
-            // numData format 
-
-            /* var dataLen = _serialPort.BytesToRead;
-                 for (var i = 0; i < dataLen; ++i)
-                 {
-                     if (numData >= 8)
-                     {
-                         ExtLog.AddLine(textBox_input.Text);
-                         textBox2Clear();
-                         numData = 0;
-                     }
-                     var newDataInt = _serialPort.ReadByte();
-                     if (newDataInt == -1) break;
-
-                     bData[numData] = (byte)newDataInt;
-                     if (!checkBox_pause.Checked) textBox2Text(formatData(bData, numData));
-
-                     numData++;
-                 }
-            */
         }
 
         private string fixLineEndings(string inText)
@@ -456,8 +453,14 @@ namespace SerialConsole // Terminal
                 Properties.Settings.Default.lastPortName = comboBox_portName.Text;
                 Properties.Settings.Default.lastPortSpeed = comboBox_portSpeed.Text;
 
+                Properties.Settings.Default.FormatText = checkBox_text.Checked;
+                Properties.Settings.Default.FormatHex = checkBox_hex.Checked;
+                Properties.Settings.Default.FormatBin = checkBox_bin.Checked;
+
                 Properties.Settings.Default.lastLE = comboBox_LE.SelectedIndex;
-                Properties.Settings.Default.lastFormat = comboBox_Format.SelectedIndex;
+                Properties.Settings.Default.fixLE = checkBox_autoLineEnd.Checked;
+                Properties.Settings.Default.timeStamps = checkBox_timeStamps.Checked;
+                Properties.Settings.Default.terminalMode = checkBox_terminalMode.Checked;
 
                 Properties.Settings.Default.timeout = int.Parse(timeout_textBox.Text);
                 Properties.Settings.Default.bitLength = comboBox_bitLength.SelectedIndex;
@@ -561,11 +564,6 @@ namespace SerialConsole // Terminal
         {
             if (history.Count == 0) return "";
             return history.Last();
-        }
-
-        private void comboBox_Format_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            _formatIndex = comboBox_Format.SelectedIndex;
         }
 
         private void button_close_Click(object sender, EventArgs e)
@@ -840,15 +838,30 @@ namespace SerialConsole // Terminal
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (!_serialPort.IsOpen) return;
-            label_lineStatus.Text = $"CDhold:[{_serialPort.CDHolding}], CTShold:[{_serialPort.CtsHolding}], DSRhold:[{_serialPort.DsrHolding}]";
-            //if (_serialPort.BytesToRead > 0) ExtLog.AddLine(_serialPort.BytesToRead.ToString());
+            checkBox_BH.Checked = _serialPort.BreakState;
+            checkBox_CDH.Checked = _serialPort.CDHolding;
+            checkBox_CTSH.Checked = _serialPort.CtsHolding;
+            checkBox_DSRH.Checked = _serialPort.DsrHolding;
+        }
+
+
+        private void checkBox_lineControl_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!_serialPort.IsOpen) return;
+            _serialPort.DtrEnable = checkBox_DTRenable.Checked;
+            _serialPort.RtsEnable = checkBox_RTSenable.Checked;
+        }
+
+        private void timer_ring_Tick(object sender, EventArgs e)
+        {
+            label_ring.Visible = false;
         }
 
         private void checkBoxDTRenable_CheckedChanged(object sender, EventArgs e)
         {
             if (!_serialPort.IsOpen) return;
-            _serialPort.DtrEnable = checkBoxDTRenable.Checked;
-            _serialPort.RtsEnable = checkBoxRTSenable.Checked;
+            _serialPort.DtrEnable = checkBox_DTRenable.Checked;
+            _serialPort.RtsEnable = checkBox_RTSenable.Checked;
         }
     }
 
@@ -881,76 +894,6 @@ namespace SerialConsole // Terminal
             }
 
         }
-        /*
-        public static void terminateLineIfNecessary()
-        {
-            if (bx == null) return;
-
-            if (bx.InvokeRequired)
-            {
-                bx.Invoke((void_voidDelegate)terminateLineIfNecessary);
-            }
-            else
-            {
-                if (bx.Text.Length == 0) return; 
-                if (!bx.Text.EndsWith("\r\n")) bx.AppendText("\r\n");
-            }
-
-        }*/
-        /*
-        public static void UpdateLine(string s)
-        {
-            if (bx == null) return;
-
-            if (bx.InvokeRequired)
-            {
-                bx.Invoke((void_stringDelegate)UpdateLine, new object[] { s });
-            }
-            else
-            {
-                bx.Lines[bx.Lines.Count() - 1] = s;
-            }
-
-        }*/
-        /*
-        public static void NewLine()
-        {
-            if (bx == null) return;
-
-            if (bx.InvokeRequired)
-            {
-                bx.Invoke((void_voidDelegate)NewLine);
-            }
-            else
-            {
-                bx.Lines[bx.Lines.Count() - 1] += "\r\n";
-            }
-
-        }
-        */
-        /*
-        public static void Add(string s)
-        {
-            if (bx == null) return;
-            if (bx.InvokeRequired)
-            {
-                bx.Invoke((void_stringDelegate)Add, new object[] { s });
-            }
-            else bx.AppendText(s);
-
-        }*/
-        /*
-        public static void Clear()
-        {
-            if (bx == null) return;
-
-            if (bx.InvokeRequired)
-            {
-                bx.Invoke((void_voidDelegate)Clear);
-            }
-            else bx.Clear();
-        }
-        */
 
     }
 }

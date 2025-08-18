@@ -122,7 +122,7 @@ namespace SerialBase
             this.comboBox_portName.FormattingEnabled = true;
             this.comboBox_portName.Location = new System.Drawing.Point(100, 3);
             this.comboBox_portName.Name = "comboBox_portName";
-            this.comboBox_portName.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_portName.Size = new System.Drawing.Size(91, 26);
             this.comboBox_portName.TabIndex = 4;
             // 
             // comboBox_portSpeed
@@ -143,7 +143,7 @@ namespace SerialBase
             "115200"});
             this.comboBox_portSpeed.Location = new System.Drawing.Point(294, 3);
             this.comboBox_portSpeed.Name = "comboBox_portSpeed";
-            this.comboBox_portSpeed.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_portSpeed.Size = new System.Drawing.Size(91, 26);
             this.comboBox_portSpeed.TabIndex = 5;
             // 
             // checkBox_pause
@@ -151,7 +151,7 @@ namespace SerialBase
             this.checkBox_pause.AutoSize = true;
             this.checkBox_pause.Location = new System.Drawing.Point(3, 6);
             this.checkBox_pause.Name = "checkBox_pause";
-            this.checkBox_pause.Size = new System.Drawing.Size(85, 19);
+            this.checkBox_pause.Size = new System.Drawing.Size(101, 22);
             this.checkBox_pause.TabIndex = 6;
             this.checkBox_pause.Text = "Pause Log";
             this.checkBox_pause.UseVisualStyleBackColor = true;
@@ -164,7 +164,7 @@ namespace SerialBase
             this.textBox_input.Location = new System.Drawing.Point(63, 765);
             this.textBox_input.Name = "textBox_input";
             this.textBox_input.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_input.Size = new System.Drawing.Size(779, 26);
+            this.textBox_input.Size = new System.Drawing.Size(762, 31);
             this.textBox_input.TabIndex = 9;
             this.textBox_input.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_input_KeyDown);
             // 
@@ -193,14 +193,15 @@ namespace SerialBase
             // 
             this.comboBox_lineEnding.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox_lineEnding.FormattingEnabled = true;
-            this.comboBox_lineEnding.ItemHeight = 15;
+            this.comboBox_lineEnding.ItemHeight = 18;
             this.comboBox_lineEnding.Items.AddRange(new object[] {
             "Add CR+LF (0x0D 0x0A) Windows \\r\\n",
             "Add LF (0x0A) Linux \\n",
-            "No Line Ending"});
-            this.comboBox_lineEnding.Location = new System.Drawing.Point(848, 767);
+            "No Line Ending",
+            "Add CR (0x0D) Vintage \\r"});
+            this.comboBox_lineEnding.Location = new System.Drawing.Point(831, 767);
             this.comboBox_lineEnding.Name = "comboBox_lineEnding";
-            this.comboBox_lineEnding.Size = new System.Drawing.Size(137, 23);
+            this.comboBox_lineEnding.Size = new System.Drawing.Size(154, 26);
             this.comboBox_lineEnding.TabIndex = 12;
             // 
             // comboBox_inputType
@@ -208,13 +209,13 @@ namespace SerialBase
             this.comboBox_inputType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox_inputType.FormattingEnabled = true;
             this.comboBox_inputType.IntegralHeight = false;
-            this.comboBox_inputType.ItemHeight = 15;
+            this.comboBox_inputType.ItemHeight = 18;
             this.comboBox_inputType.Items.AddRange(new object[] {
             "Text",
             "HEX"});
             this.comboBox_inputType.Location = new System.Drawing.Point(10, 766);
             this.comboBox_inputType.Name = "comboBox_inputType";
-            this.comboBox_inputType.Size = new System.Drawing.Size(47, 23);
+            this.comboBox_inputType.Size = new System.Drawing.Size(47, 26);
             this.comboBox_inputType.TabIndex = 14;
             this.comboBox_inputType.Text = "Text";
             // 
@@ -225,7 +226,7 @@ namespace SerialBase
             this.checkBox_timeStamps.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_timeStamps.Location = new System.Drawing.Point(3, 32);
             this.checkBox_timeStamps.Name = "checkBox_timeStamps";
-            this.checkBox_timeStamps.Size = new System.Drawing.Size(94, 19);
+            this.checkBox_timeStamps.Size = new System.Drawing.Size(112, 22);
             this.checkBox_timeStamps.TabIndex = 15;
             this.checkBox_timeStamps.Text = "Timestamps";
             this.checkBox_timeStamps.UseVisualStyleBackColor = true;
@@ -266,7 +267,7 @@ namespace SerialBase
             this.label_ring.ForeColor = System.Drawing.Color.Red;
             this.label_ring.Location = new System.Drawing.Point(346, 85);
             this.label_ring.Name = "label_ring";
-            this.label_ring.Size = new System.Drawing.Size(41, 15);
+            this.label_ring.Size = new System.Drawing.Size(49, 18);
             this.label_ring.TabIndex = 32;
             this.label_ring.Text = "RING";
             this.label_ring.Visible = false;
@@ -276,7 +277,7 @@ namespace SerialBase
             this.checkBox_BH.AutoSize = true;
             this.checkBox_BH.Location = new System.Drawing.Point(331, 107);
             this.checkBox_BH.Name = "checkBox_BH";
-            this.checkBox_BH.Size = new System.Drawing.Size(58, 19);
+            this.checkBox_BH.Size = new System.Drawing.Size(69, 22);
             this.checkBox_BH.TabIndex = 31;
             this.checkBox_BH.Text = "Break";
             this.checkBox_BH.UseVisualStyleBackColor = true;
@@ -286,7 +287,7 @@ namespace SerialBase
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(3, 85);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 15);
+            this.label1.Size = new System.Drawing.Size(100, 18);
             this.label1.TabIndex = 30;
             this.label1.Text = "Control Lines:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -296,7 +297,7 @@ namespace SerialBase
             this.checkBox_DSRH.AutoSize = true;
             this.checkBox_DSRH.Location = new System.Drawing.Point(244, 107);
             this.checkBox_DSRH.Name = "checkBox_DSRH";
-            this.checkBox_DSRH.Size = new System.Drawing.Size(81, 19);
+            this.checkBox_DSRH.Size = new System.Drawing.Size(97, 22);
             this.checkBox_DSRH.TabIndex = 29;
             this.checkBox_DSRH.Text = "DSR Hold";
             this.checkBox_DSRH.UseVisualStyleBackColor = true;
@@ -306,7 +307,7 @@ namespace SerialBase
             this.checkBox_CTSH.AutoSize = true;
             this.checkBox_CTSH.Location = new System.Drawing.Point(164, 107);
             this.checkBox_CTSH.Name = "checkBox_CTSH";
-            this.checkBox_CTSH.Size = new System.Drawing.Size(78, 19);
+            this.checkBox_CTSH.Size = new System.Drawing.Size(95, 22);
             this.checkBox_CTSH.TabIndex = 28;
             this.checkBox_CTSH.Text = "CTS Hold";
             this.checkBox_CTSH.UseVisualStyleBackColor = true;
@@ -316,7 +317,7 @@ namespace SerialBase
             this.label_ls.AutoSize = true;
             this.label_ls.Location = new System.Drawing.Point(8, 108);
             this.label_ls.Name = "label_ls";
-            this.label_ls.Size = new System.Drawing.Size(77, 15);
+            this.label_ls.Size = new System.Drawing.Size(93, 18);
             this.label_ls.TabIndex = 27;
             this.label_ls.Text = "Lines Status:";
             this.label_ls.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -326,7 +327,7 @@ namespace SerialBase
             this.checkBox_CDH.AutoSize = true;
             this.checkBox_CDH.Location = new System.Drawing.Point(86, 107);
             this.checkBox_CDH.Name = "checkBox_CDH";
-            this.checkBox_CDH.Size = new System.Drawing.Size(72, 19);
+            this.checkBox_CDH.Size = new System.Drawing.Size(87, 22);
             this.checkBox_CDH.TabIndex = 26;
             this.checkBox_CDH.Text = "CD Hold";
             this.checkBox_CDH.UseVisualStyleBackColor = true;
@@ -338,7 +339,7 @@ namespace SerialBase
             this.checkBox_RTSenable.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_RTSenable.Location = new System.Drawing.Point(164, 84);
             this.checkBox_RTSenable.Name = "checkBox_RTSenable";
-            this.checkBox_RTSenable.Size = new System.Drawing.Size(50, 19);
+            this.checkBox_RTSenable.Size = new System.Drawing.Size(60, 22);
             this.checkBox_RTSenable.TabIndex = 25;
             this.checkBox_RTSenable.Text = "RTS";
             this.checkBox_RTSenable.UseVisualStyleBackColor = true;
@@ -351,7 +352,7 @@ namespace SerialBase
             this.checkBox_DTRenable.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_DTRenable.Location = new System.Drawing.Point(86, 84);
             this.checkBox_DTRenable.Name = "checkBox_DTRenable";
-            this.checkBox_DTRenable.Size = new System.Drawing.Size(51, 19);
+            this.checkBox_DTRenable.Size = new System.Drawing.Size(61, 22);
             this.checkBox_DTRenable.TabIndex = 24;
             this.checkBox_DTRenable.Text = "DTR";
             this.checkBox_DTRenable.UseVisualStyleBackColor = true;
@@ -362,7 +363,7 @@ namespace SerialBase
             this.label_br.AutoSize = true;
             this.label_br.Location = new System.Drawing.Point(222, 8);
             this.label_br.Name = "label_br";
-            this.label_br.Size = new System.Drawing.Size(68, 15);
+            this.label_br.Size = new System.Drawing.Size(81, 18);
             this.label_br.TabIndex = 23;
             this.label_br.Text = "Baud Rate:";
             this.label_br.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -377,7 +378,7 @@ namespace SerialBase
             "2 Stop Bits"});
             this.comboBox_stopBits.Location = new System.Drawing.Point(294, 30);
             this.comboBox_stopBits.Name = "comboBox_stopBits";
-            this.comboBox_stopBits.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_stopBits.Size = new System.Drawing.Size(91, 26);
             this.comboBox_stopBits.TabIndex = 22;
             this.comboBox_stopBits.Text = "No Stop Bits";
             // 
@@ -392,7 +393,7 @@ namespace SerialBase
             "Space"});
             this.comboBox_parity.Location = new System.Drawing.Point(197, 30);
             this.comboBox_parity.Name = "comboBox_parity";
-            this.comboBox_parity.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_parity.Size = new System.Drawing.Size(91, 26);
             this.comboBox_parity.TabIndex = 21;
             this.comboBox_parity.Text = "No Parity";
             // 
@@ -404,7 +405,7 @@ namespace SerialBase
             "8 Bits"});
             this.comboBox_bitLength.Location = new System.Drawing.Point(4, 30);
             this.comboBox_bitLength.Name = "comboBox_bitLength";
-            this.comboBox_bitLength.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_bitLength.Size = new System.Drawing.Size(91, 26);
             this.comboBox_bitLength.TabIndex = 20;
             this.comboBox_bitLength.Text = "8 Bits";
             // 
@@ -418,7 +419,7 @@ namespace SerialBase
             "RTS+XonXoff"});
             this.comboBox_handshake.Location = new System.Drawing.Point(101, 30);
             this.comboBox_handshake.Name = "comboBox_handshake";
-            this.comboBox_handshake.Size = new System.Drawing.Size(91, 23);
+            this.comboBox_handshake.Size = new System.Drawing.Size(91, 26);
             this.comboBox_handshake.TabIndex = 19;
             this.comboBox_handshake.Text = "No Handshake";
             // 
@@ -426,7 +427,7 @@ namespace SerialBase
             // 
             this.timeout_textBox.Location = new System.Drawing.Point(294, 57);
             this.timeout_textBox.Name = "timeout_textBox";
-            this.timeout_textBox.Size = new System.Drawing.Size(91, 21);
+            this.timeout_textBox.Size = new System.Drawing.Size(91, 24);
             this.timeout_textBox.TabIndex = 18;
             this.timeout_textBox.Text = "500";
             // 
@@ -435,7 +436,7 @@ namespace SerialBase
             this.label_to.AutoSize = true;
             this.label_to.Location = new System.Drawing.Point(196, 60);
             this.label_to.Name = "label_to";
-            this.label_to.Size = new System.Drawing.Size(93, 15);
+            this.label_to.Size = new System.Drawing.Size(114, 18);
             this.label_to.TabIndex = 17;
             this.label_to.Text = "RX/TX Timeout:";
             this.label_to.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -461,7 +462,7 @@ namespace SerialBase
             this.checkBox_autoLineEnd.AutoSize = true;
             this.checkBox_autoLineEnd.Location = new System.Drawing.Point(3, 83);
             this.checkBox_autoLineEnd.Name = "checkBox_autoLineEnd";
-            this.checkBox_autoLineEnd.Size = new System.Drawing.Size(97, 19);
+            this.checkBox_autoLineEnd.Size = new System.Drawing.Size(114, 22);
             this.checkBox_autoLineEnd.TabIndex = 28;
             this.checkBox_autoLineEnd.Text = "Fix LineEnds";
             this.checkBox_autoLineEnd.UseVisualStyleBackColor = true;
@@ -471,7 +472,7 @@ namespace SerialBase
             this.checkBox_bin.AutoSize = true;
             this.checkBox_bin.Location = new System.Drawing.Point(118, 58);
             this.checkBox_bin.Name = "checkBox_bin";
-            this.checkBox_bin.Size = new System.Drawing.Size(60, 19);
+            this.checkBox_bin.Size = new System.Drawing.Size(71, 22);
             this.checkBox_bin.TabIndex = 27;
             this.checkBox_bin.Text = "Binary";
             this.checkBox_bin.UseVisualStyleBackColor = true;
@@ -481,7 +482,7 @@ namespace SerialBase
             this.checkBox_hex.AutoSize = true;
             this.checkBox_hex.Location = new System.Drawing.Point(118, 32);
             this.checkBox_hex.Name = "checkBox_hex";
-            this.checkBox_hex.Size = new System.Drawing.Size(51, 19);
+            this.checkBox_hex.Size = new System.Drawing.Size(61, 22);
             this.checkBox_hex.TabIndex = 26;
             this.checkBox_hex.Text = "HEX";
             this.checkBox_hex.UseVisualStyleBackColor = true;
@@ -493,7 +494,7 @@ namespace SerialBase
             this.checkBox_text.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_text.Location = new System.Drawing.Point(118, 6);
             this.checkBox_text.Name = "checkBox_text";
-            this.checkBox_text.Size = new System.Drawing.Size(49, 19);
+            this.checkBox_text.Size = new System.Drawing.Size(58, 22);
             this.checkBox_text.TabIndex = 25;
             this.checkBox_text.Text = "Text";
             this.checkBox_text.UseVisualStyleBackColor = true;
@@ -503,7 +504,7 @@ namespace SerialBase
             this.checkBox_terminalMode.AutoSize = true;
             this.checkBox_terminalMode.Location = new System.Drawing.Point(3, 58);
             this.checkBox_terminalMode.Name = "checkBox_terminalMode";
-            this.checkBox_terminalMode.Size = new System.Drawing.Size(110, 19);
+            this.checkBox_terminalMode.Size = new System.Drawing.Size(129, 22);
             this.checkBox_terminalMode.TabIndex = 24;
             this.checkBox_terminalMode.Text = "Terminal Mode";
             this.checkBox_terminalMode.UseVisualStyleBackColor = true;
@@ -533,7 +534,7 @@ namespace SerialBase
             this.MinimumSize = new System.Drawing.Size(620, 240);
             this.Name = "SerialBaseForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "COM Port Base - 20250801";
+            this.Text = "COM Port Base - 20250817";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel_COMcontrols.ResumeLayout(false);
