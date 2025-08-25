@@ -274,25 +274,25 @@ namespace SerialBase
             if (checkBox_text.Checked && !checkBox_hex.Checked && !checkBox_bin.Checked)
             {
                 string inText = "";
-                while (_serialPort.BytesToRead > 0)
+                while (_serialPort.IsOpen && (_serialPort.BytesToRead > 0))
                 {
                     try
                     {
-                        inText += _serialPort.ReadLine();
+                        inText += _serialPort.ReadLine() + "\n";
                     }
                     catch
                     {
                         inText += _serialPort.ReadExisting();
                     }
+                    inText = fixLineEndings(inText);
                 }
-                inText = fixLineEndings(inText);
                 ExtLog.AddLine(inText, checkBox_timeStamps.Checked);
                 return;
             }
 
 
             var toRead = _serialPort.BytesToRead;
-            while (toRead > 0)
+            while (_serialPort.IsOpen && (toRead > 0))
             {
                 sb.Clear();
                 if (toRead > 8) toRead = 8;
