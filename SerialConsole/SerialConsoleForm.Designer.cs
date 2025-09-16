@@ -97,6 +97,7 @@ namespace SerialConsole
             this.checkBox_timeStamps = new System.Windows.Forms.CheckBox();
             this.button_clear = new System.Windows.Forms.Button();
             this.timer_ring = new System.Windows.Forms.Timer(this.components);
+            this.label_linelength = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
@@ -125,8 +126,9 @@ namespace SerialConsole
             this.textBox_input.Location = new System.Drawing.Point(63, 765);
             this.textBox_input.Name = "textBox_input";
             this.textBox_input.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_input.Size = new System.Drawing.Size(1048, 31);
+            this.textBox_input.Size = new System.Drawing.Size(1012, 31);
             this.textBox_input.TabIndex = 9;
+            this.textBox_input.TextChanged += new System.EventHandler(this.textBox_input_TextChanged);
             this.textBox_input.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_input_KeyDown);
             // 
             // button_send
@@ -169,6 +171,7 @@ namespace SerialConsole
             this.comboBox_inputType.Size = new System.Drawing.Size(47, 26);
             this.comboBox_inputType.TabIndex = 14;
             this.comboBox_inputType.Text = "Text";
+            this.comboBox_inputType.SelectedIndexChanged += new System.EventHandler(this.textBox_input_TextChanged);
             // 
             // button_sendBIN
             // 
@@ -832,6 +835,14 @@ namespace SerialConsole
             // 
             this.timer_ring.Tick += new System.EventHandler(this.timer_ring_Tick);
             // 
+            // label_linelength
+            // 
+            this.label_linelength.Location = new System.Drawing.Point(1081, 771);
+            this.label_linelength.Name = "label_linelength";
+            this.label_linelength.Size = new System.Drawing.Size(39, 20);
+            this.label_linelength.TabIndex = 34;
+            this.label_linelength.Text = "000";
+            // 
             // SerialConsoleForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -846,11 +857,12 @@ namespace SerialConsole
             this.Controls.Add(this.button_send);
             this.Controls.Add(this.textBox_input);
             this.Controls.Add(this.textBox_output);
+            this.Controls.Add(this.label_linelength);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MinimumSize = new System.Drawing.Size(1163, 240);
             this.Name = "SerialConsoleForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Serial Console - 20250824";
+            this.Text = "Serial Console - 20250916";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
@@ -936,6 +948,7 @@ namespace SerialConsole
         private System.Windows.Forms.CheckBox checkBox_timeStamps;
         private System.Windows.Forms.Button button_clear;
         private System.Windows.Forms.Timer timer_ring;
+        private System.Windows.Forms.Label label_linelength;
     }
 }
 

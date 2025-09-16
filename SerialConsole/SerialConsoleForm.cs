@@ -864,6 +864,17 @@ namespace SerialConsole // Terminal
             _serialPort.DtrEnable = checkBox_DTRenable.Checked;
             _serialPort.RtsEnable = checkBox_RTSenable.Checked;
         }
+
+        private void textBox_input_TextChanged(object sender, EventArgs e)
+        {
+            if (comboBox_inputType.SelectedIndex == 0) label_linelength.Text = textBox_input.Text.Length.ToString();
+            else
+            {
+                var tempList = textBoxToByteList(textBox_input);
+                label_linelength.Text = tempList.Count.ToString();
+            }
+        }
+
     }
 
     delegate void void_stringDelegate(string text);
