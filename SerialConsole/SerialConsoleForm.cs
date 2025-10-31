@@ -544,7 +544,15 @@ namespace SerialConsole // Terminal
 
             if (comboBox_inputType.SelectedIndex == 0)
             {
-                _serialPort.Write(textBox_input.Text + LE[comboBox_LE.SelectedIndex]);
+                try
+                {
+                    _serialPort.Write(textBox_input.Text + LE[comboBox_LE.SelectedIndex]);
+                }
+                catch (Exception ex)
+                {
+                    ExtLog.AddLine("[Write error: " + ex.Message + "]", checkBox_timeStamps.Checked);
+                    _serialPort.DiscardOutBuffer();
+                }
             } 
             else
             {
@@ -552,8 +560,15 @@ namespace SerialConsole // Terminal
                 string s = string.Concat(c);
                 if ((s.Length % 2) != 0) s = "0" + s;
                 for (var i = 0; i < s.Length; i += 2) dataBuffer[i / 2] = hexToByte(s.Substring(i, 2));
-
-                _serialPort.Write(dataBuffer, 0, s.Length / 2);
+                try
+                {
+                    _serialPort.Write(dataBuffer, 0, s.Length / 2);
+                    _serialPort.DiscardOutBuffer();
+                }
+                catch (Exception ex)
+                {
+                    ExtLog.AddLine("[Write error: " + ex.Message + "]", checkBox_timeStamps.Checked);
+                }
             }
             ExtLog.AddLine("> " + textBox_input.Text, checkBox_timeStamps.Checked);
             if ((textBox_input.Text.Trim() != "") && (textBox_input.Text != safeLastHistory())) history.Add(textBox_input.Text);
@@ -839,10 +854,13 @@ namespace SerialConsole // Terminal
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (!_serialPort.IsOpen) return;
-            checkBox_BH.Checked = _serialPort.BreakState;
-            checkBox_CDH.Checked = _serialPort.CDHolding;
-            checkBox_CTSH.Checked = _serialPort.CtsHolding;
-            checkBox_DSRH.Checked = _serialPort.DsrHolding;
+            try
+            {
+                checkBox_BH.Checked = _serialPort.BreakState;
+                checkBox_CDH.Checked = _serialPort.CDHolding;
+                checkBox_CTSH.Checked = _serialPort.CtsHolding;
+                checkBox_DSRH.Checked = _serialPort.DsrHolding;
+            } catch { };
         }
 
 

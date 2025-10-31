@@ -862,7 +862,7 @@ namespace SerialConsole
             this.MinimumSize = new System.Drawing.Size(1163, 240);
             this.Name = "SerialConsoleForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Serial Console - 20250916";
+            this.Text = "Serial Console - 20251031";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
