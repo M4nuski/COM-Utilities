@@ -143,6 +143,7 @@ namespace SerialConsole // Terminal
         private void button_list_Click(object sender, EventArgs e)
         {
             comboBox_portName.Items.Clear();
+            comboBox_portName.Text = "";
             foreach (string s in SerialPort.GetPortNames())
             {
                 comboBox_portName.Items.Add(s);
@@ -180,20 +181,19 @@ namespace SerialConsole // Terminal
                         break;
                     case 1:
                         _serialPort.Handshake = Handshake.RequestToSend;
-                        _serialPort.DtrEnable = checkBox_DTRenable.Checked;
-                        _serialPort.RtsEnable = checkBox_RTSenable.Checked;
-
+                       // _serialPort.DtrEnable = checkBox_DTRenable.Checked;
+                       // _serialPort.RtsEnable = checkBox_RTSenable.Checked;
                         break;
                     case 2:
                         _serialPort.Handshake = Handshake.XOnXOff;
                         break;
                     case 3:
                         _serialPort.Handshake = Handshake.RequestToSendXOnXOff;
-                        _serialPort.DtrEnable = checkBox_DTRenable.Checked;
-                        _serialPort.RtsEnable = checkBox_RTSenable.Checked;
                         break;
                 }
 
+                _serialPort.DtrEnable = checkBox_DTRenable.Checked;
+                _serialPort.RtsEnable = checkBox_RTSenable.Checked;
                 switch (comboBox_parity.SelectedIndex)
                 {
                     case 0:
